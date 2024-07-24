@@ -17,10 +17,10 @@ class Horaire
     #[ORM\Column(length: 25)]
     private ?string $jour = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
+    #[ORM\Column(type: Types::JSON)]
     private array $heureOuverture = [];
 
-    #[ORM\Column(type: Types::ARRAY)]
+    #[ORM\Column(type: Types::JSON)]
     private array $heureFermeture = [];
 
     #[ORM\ManyToOne(inversedBy: 'horaires')]

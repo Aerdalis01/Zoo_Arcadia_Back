@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: HabitatsRepository::class)]
 class Habitats
 {
@@ -28,13 +29,17 @@ class Habitats
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'habitats')]
-    private ?ZooArcadia $ZooArcadia = null;
+    #[ORM\OneToOne(inversedBy: 'habitats', cascade: ['persist', 'remove'])]
+    private ?ImageZoo $imageZoo = null;
 
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'Habitats')]
+    #[ORM\ManyToOne(targetEntity: ZooArcadia::class, inversedBy: 'habitats', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ZooArcadia $zooArcadia = null;
+
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitats', orphanRemoval: true)]
     private Collection $animals;
 
-    #[ORM\ManyToOne(inversedBy: 'habitats')]
+    #[ORM\ManyToOne(inversedBy: 'habitats', cascade: ['persist', 'remove'])]
     private ?Admin $admin = null;
 
     #[ORM\Column]
@@ -44,6 +49,8 @@ class Habitats
     {
         $this->animals = new ArrayCollection();
     }
+
+    
 
     public function getId(): ?int
     {
@@ -98,15 +105,15 @@ class Habitats
         return $this;
     }
 
+
     public function getZooArcadia(): ?ZooArcadia
     {
-        return $this->ZooArcadia;
+        return $this->zooArcadia;
     }
 
-    public function setZooArcadia(?ZooArcadia $ZooArcadia): static
+    public function setZooArcadia(?ZooArcadia $zooArcadia): self
     {
-        $this->ZooArcadia = $ZooArcadia;
-
+        $this->zooArcadia = $zooArcadia;
         return $this;
     }
 
@@ -164,4 +171,15 @@ class Habitats
         return $this;
     }
     
+    public function getImageZoo(): ?ImageZoo
+    {
+        return $this->imageZoo;
+    }
+
+    public function setImageZoo(?ImageZoo $imageZoo): static
+    {
+        $this->imageZoo = $imageZoo;
+
+        return $this;
+    }
 }

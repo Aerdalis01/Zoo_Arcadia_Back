@@ -30,7 +30,7 @@ class Avis
     private ?ZooArcadia $ZooArcadia = null;
 
     #[ORM\ManyToOne(inversedBy: 'avis')]
-    private ?employe $employe = null;
+    private ?Employe $employe = null;
 
     public function getId(): ?int
     {

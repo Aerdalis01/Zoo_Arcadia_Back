@@ -27,10 +27,10 @@ class RapportAlimentation
     private ?float $quantite = null;
 
     #[ORM\ManyToOne(inversedBy: 'rapportAlimentations')]
-    private ?Animal $Animal = null;
+    private ?Animal $animal = null;
 
     #[ORM\ManyToOne(inversedBy: 'rapportAlimentations')]
-    private ?Employe $Employe = null;
+    private ?Employe $employe = null;
 
     #[ORM\ManyToOne(inversedBy: 'Alimentation')]
     private ?CompteRenduVet $compteRenduVet = null;
@@ -90,24 +90,24 @@ class RapportAlimentation
 
     public function getAnimal(): ?Animal
     {
-        return $this->Animal;
+        return $this->animal;
     }
 
-    public function setAnimal(?Animal $Animal): static
+    public function setAnimal(?Animal $animal): static
     {
-        $this->Animal = $Animal;
+        $this->animal = $animal;
 
         return $this;
     }
 
     public function getEmploye(): ?Employe
     {
-        return $this->Employe;
+        return $this->employe;
     }
 
-    public function setEmploye(?Employe $Employe): static
+    public function setEmploye(?Employe $employe): static
     {
-        $this->Employe = $Employe;
+        $this->employe = $employe;
 
         return $this;
     }

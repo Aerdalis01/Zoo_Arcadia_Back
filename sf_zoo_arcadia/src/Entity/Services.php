@@ -24,7 +24,7 @@ class Services
     private ?ZooArcadia $ZooArcadia = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
-    private ?employe $employe = null;
+    private ?Employe $employe = null;
 
     #[ORM\ManyToOne(inversedBy: 'service')]
     private ?Admin $admin = null;

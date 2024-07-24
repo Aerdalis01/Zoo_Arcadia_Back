@@ -23,7 +23,7 @@ class Contact
     private ?string $commentaire = null;
 
     #[ORM\ManyToOne(inversedBy: 'contacts')]
-    private ?employe $employe = null;
+    private ?Employe $employe = null;
 
     public function getId(): ?int
     {

@@ -53,12 +53,12 @@ class CompteRenduVet
         return $this;
     }
 
-    public function getVétérinaire(): ?Veterinaire
+    public function getVeterinaire(): ?Veterinaire
     {
         return $this->Vétérinaire;
     }
 
-    public function setVétérinaire(?Veterinaire $Vétérinaire): static
+    public function setVeterinaire(?Veterinaire $Vétérinaire): static
     {
         $this->Vétérinaire = $Vétérinaire;
 

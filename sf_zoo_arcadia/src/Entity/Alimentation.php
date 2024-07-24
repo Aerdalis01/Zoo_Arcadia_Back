@@ -40,12 +40,12 @@ class Alimentation
         return $this->id;
     }
 
-    public function getVétérinaire(): ?veterinaire
+    public function getVeterinaire(): ?veterinaire
     {
         return $this->vétérinaire;
     }
 
-    public function setVétérinaire(?veterinaire $vétérinaire): static
+    public function setVeterinaire(?veterinaire $vétérinaire): static
     {
         $this->vétérinaire = $vétérinaire;
 

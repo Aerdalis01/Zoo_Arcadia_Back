@@ -18,26 +18,20 @@ class Animal
     #[ORM\Column(length: 25)]
     private ?string $prenom = null;
 
-    #[ORM\Column]
-    private array $image = [];
+    #[ORM\ManyToOne(inversedBy: 'animals')]
+    private ?ZooArcadia $zooArcadia = null;
 
     #[ORM\ManyToOne(inversedBy: 'animals')]
-    private ?ZooArcadia $ZooArcadia = null;
+    private ?Habitats $habitats = null;
 
-    #[ORM\ManyToOne(inversedBy: 'animals')]
-    private ?Habitats $Habitats = null;
-
-    #[ORM\ManyToOne(inversedBy: 'Animal')]
+    #[ORM\ManyToOne(inversedBy: 'animal')]
     private ?Race $race = null;
 
-    #[ORM\OneToMany(targetEntity: RapportAlimentation::class, mappedBy: 'Animal')]
+    #[ORM\OneToMany(targetEntity: RapportAlimentation::class, mappedBy: 'animal')]
     private Collection $rapportAlimentations;
 
     #[ORM\ManyToMany(targetEntity: Consultation::class, mappedBy: 'animal')]
     private Collection $consultations;
-
-    #[ORM\ManyToOne(inversedBy: 'animal')]
-    private ?Admin $habitats = null;
 
     #[ORM\ManyToOne(inversedBy: 'animal')]
     private ?Admin $admin = null;
@@ -47,6 +41,9 @@ class Animal
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?ImageZoo $imageZoo = null;
 
     public function __construct()
     {
@@ -71,38 +68,27 @@ class Animal
         return $this;
     }
 
-    public function getImage(): array
-    {
-        return $this->image;
-    }
-
-    public function setImage(array $image): static
-    {
-        $this->image = $image;
-
-        return $this;
-    }
 
     public function getZooArcadia(): ?ZooArcadia
     {
-        return $this->ZooArcadia;
+        return $this->zooArcadia;
     }
 
-    public function setZooArcadia(?ZooArcadia $ZooArcadia): static
+    public function setZooArcadia(?ZooArcadia $zooArcadia): static
     {
-        $this->ZooArcadia = $ZooArcadia;
+        $this->zooArcadia = $zooArcadia;
 
         return $this;
     }
 
     public function getHabitats(): ?Habitats
     {
-        return $this->Habitats;
+        return $this->habitats;
     }
 
-    public function setHabitats(?Habitats $Habitats): static
+    public function setHabitats(?Habitats $habitats): static
     {
-        $this->Habitats = $Habitats;
+        $this->habitats = $habitats;
 
         return $this;
     }
@@ -211,4 +197,17 @@ class Animal
 
         return $this;
     }
+
+    public function getImageZoo(): ?ImageZoo
+    {
+        return $this->imageZoo;
+    }
+
+    public function setImageZoo(?ImageZoo $imageZoo): static
+    {
+        $this->imageZoo = $imageZoo;
+
+        return $this;
+    }
+
 }

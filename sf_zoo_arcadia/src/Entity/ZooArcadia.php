@@ -31,30 +31,31 @@ class ZooArcadia
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToMany(targetEntity: Habitats::class, mappedBy: 'ZooArcadia')]
+    #[ORM\OneToMany(targetEntity: Habitats::class, mappedBy: 'zooArcadia', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $habitats;
 
-    #[ORM\OneToMany(targetEntity: Services::class, mappedBy: 'ZooArcadia')]
+    #[ORM\OneToMany(targetEntity: Services::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
     private Collection $services;
 
-    #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'ZooArcadia')]
+    #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
     private Collection $avis;
 
-    #[ORM\OneToMany(targetEntity: ImageZoo::class, mappedBy: 'ZooArcadia')]
-    private Collection $imageZoos;
-
-    #[ORM\OneToMany(targetEntity: Horaire::class, mappedBy: 'ZooArcadia')]
+    #[ORM\OneToMany(targetEntity: Horaire::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
     private Collection $horaires;
 
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'ZooArcadia')]
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
     private Collection $animals;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Carousel $carousel = null;
+
+    
 
     public function __construct()
     {
         $this->habitats = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->avis = new ArrayCollection();
-        $this->imageZoos = new ArrayCollection();
         $this->horaires = new ArrayCollection();
         $this->animals = new ArrayCollection();
     }
@@ -132,20 +133,19 @@ class ZooArcadia
         return $this->habitats;
     }
 
-    public function addHabitat(Habitats $habitat): static
+    public function addHabitat(Habitats $habitat): self
     {
         if (!$this->habitats->contains($habitat)) {
-            $this->habitats->add($habitat);
+            $this->habitats[] = $habitat;
             $habitat->setZooArcadia($this);
         }
 
         return $this;
     }
 
-    public function removeHabitat(Habitats $habitat): static
+    public function removeHabitat(Habitats $habitat): self
     {
         if ($this->habitats->removeElement($habitat)) {
-            // set the owning side to null (unless already changed)
             if ($habitat->getZooArcadia() === $this) {
                 $habitat->setZooArcadia(null);
             }
@@ -215,36 +215,6 @@ class ZooArcadia
     }
 
     /**
-     * @return Collection<int, ImageZoo>
-     */
-    public function getImageZoos(): Collection
-    {
-        return $this->imageZoos;
-    }
-
-    public function addImageZoo(ImageZoo $imageZoo): static
-    {
-        if (!$this->imageZoos->contains($imageZoo)) {
-            $this->imageZoos->add($imageZoo);
-            $imageZoo->setZooArcadia($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImageZoo(ImageZoo $imageZoo): static
-    {
-        if ($this->imageZoos->removeElement($imageZoo)) {
-            // set the owning side to null (unless already changed)
-            if ($imageZoo->getZooArcadia() === $this) {
-                $imageZoo->setZooArcadia(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Horaire>
      */
     public function getHoraires(): Collection
@@ -303,5 +273,18 @@ class ZooArcadia
 
         return $this;
     }
+
+    public function getCarousel(): ?Carousel
+    {
+        return $this->carousel;
     }
 
+    public function setCarousel(?Carousel $carousel): static
+    {
+        $this->carousel = $carousel;
+
+        return $this;
+    }
+
+
+}

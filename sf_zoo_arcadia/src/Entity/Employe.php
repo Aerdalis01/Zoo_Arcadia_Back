@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Employe extends User
 {
-    #[ORM\OneToMany(targetEntity: RapportAlimentation::class, mappedBy: 'Employe')]
+    #[ORM\OneToMany(targetEntity: RapportAlimentation::class, mappedBy: 'employe')]
     private Collection $rapportAlimentations;
 
     #[ORM\OneToMany(targetEntity: Alimentation::class, mappedBy: 'employe')]

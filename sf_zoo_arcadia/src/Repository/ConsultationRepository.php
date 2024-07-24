@@ -21,28 +21,53 @@ class ConsultationRepository extends ServiceEntityRepository
         parent::__construct($registry, Consultation::class);
     }
 
-//    /**
-//     * @return Consultation[] Returns an array of Consultation objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+    * @param int $animalId
+    * @return Consultation []
+    */
+        public function filtreParAnimal(int $animalId): array
+        {
+                return $this->createQueryBuilder('c')
+                    ->andWhere('c.animal = :animalId')
+                    ->setParameter('animalId', $animalId)
+                    ->orderBy('c.date', 'DESC')
+                    ->setMaxResults(10)
+                    ->getQuery()
+                    ->getResult();
+        }
 
-//    public function findOneBySomeField($value): ?Consultation
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @param \DateTimeInterface $startDate
+     * @param \DateTimeInterface $endDate
+     * @return Consultation[]
+     */
+        public function filtreParDate(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+        {
+                return $this->createQueryBuilder('c')
+                    ->andWhere('c.date BETWEEN :startDate AND :endDate')
+                    ->setParameter('startDate', $startDate)
+                    ->setParameter('endDate', $endDate)
+                    ->orderBy('c.date', 'DESC')
+                    ->getQuery()
+                    ->getResult();
+        }
+        /**
+     * @param int $animalId
+     * @param \DateHeureInterface $startDate
+     * @param \DateHeureInterface $endDate
+     * @return Consultation[]
+     */
+    public function findByAnimalAndDateRange(int $animalId, \DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.animal = :animalId')
+            ->andWhere('c.date BETWEEN :startDate AND :endDate')
+            ->setParameter('animalId', $animalId)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->orderBy('c.date', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
+    

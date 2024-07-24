@@ -14,51 +14,70 @@ class ImageZoo
     private ?int $id = null;
 
     #[ORM\Column(length: 64)]
-    private ?string $titre = null;
+    private ?string $nom = null;
 
     #[ORM\Column]
-    private array $image = [];
+    private ?string $imagePath = null;
 
-    #[ORM\ManyToOne(inversedBy: 'imageZoos')]
-    private ?ZooArcadia $ZooArcadia = null;
+    #[ORM\Column]
+    private ?string $imagesubDirectory = null;
+
+
+    #[ORM\OneToOne(inversedBy: 'habitats', orphanRemoval: true)]
+    private ?Habitats $habitats = null;
+    
+
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitre(): ?string
+    public function getNom(): ?string
     {
-        return $this->titre;
+        return $this->nom;
     }
 
-    public function setTitre(string $titre): static
+    public function setNom(string $nom): static
     {
-        $this->titre = $titre;
+        $this->nom = $nom;
 
         return $this;
     }
 
-    public function getImage(): array
+    public function getImagePath(): string
     {
-        return $this->image;
+        return $this->imagePath;
     }
 
-    public function setImage(array $image): static
+    public function setImagePath(string $imagepath): static
     {
-        $this->image = $image;
+        $this->imagePath = $imagepath;
 
         return $this;
     }
 
-    public function getZooArcadia(): ?ZooArcadia
+
+    public function getImageSubDirectory(): string
     {
-        return $this->ZooArcadia;
+        return $this->imagesubDirectory;
     }
 
-    public function setZooArcadia(?ZooArcadia $ZooArcadia): static
+    public function setImageSubDirectory(string $imagesubDirectory): static
     {
-        $this->ZooArcadia = $ZooArcadia;
+        $this->imagesubDirectory = $imagesubDirectory;
+
+        return $this;
+    }
+
+    public function getHabitats(): ?Habitats
+    {
+        return $this->habitats;
+    }
+
+    public function setHabitats(?Habitats $habitats): static
+    {
+        $this->habitats = $habitats;
 
         return $this;
     }
