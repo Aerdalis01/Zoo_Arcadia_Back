@@ -34,14 +34,10 @@ class ZooArcadia
     #[ORM\OneToMany(targetEntity: Habitats::class, mappedBy: 'zooArcadia', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $habitats;
 
-    #[ORM\OneToMany(targetEntity: Services::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
-    private Collection $services;
 
     #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
     private Collection $avis;
 
-    #[ORM\OneToMany(targetEntity: Horaire::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
-    private Collection $horaires;
 
     #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
     private Collection $animals;
@@ -54,9 +50,7 @@ class ZooArcadia
     public function __construct()
     {
         $this->habitats = new ArrayCollection();
-        $this->services = new ArrayCollection();
         $this->avis = new ArrayCollection();
-        $this->horaires = new ArrayCollection();
         $this->animals = new ArrayCollection();
     }
 
@@ -154,35 +148,6 @@ class ZooArcadia
         return $this;
     }
 
-    /**
-     * @return Collection<int, Services>
-     */
-    public function getServices(): Collection
-    {
-        return $this->services;
-    }
-
-    public function addService(Services $service): static
-    {
-        if (!$this->services->contains($service)) {
-            $this->services->add($service);
-            $service->setZooArcadia($this);
-        }
-
-        return $this;
-    }
-
-    public function removeService(Services $service): static
-    {
-        if ($this->services->removeElement($service)) {
-            // set the owning side to null (unless already changed)
-            if ($service->getZooArcadia() === $this) {
-                $service->setZooArcadia(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Avis>
@@ -208,36 +173,6 @@ class ZooArcadia
             // set the owning side to null (unless already changed)
             if ($avi->getZooArcadia() === $this) {
                 $avi->setZooArcadia(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Horaire>
-     */
-    public function getHoraires(): Collection
-    {
-        return $this->horaires;
-    }
-
-    public function addHoraire(Horaire $horaire): static
-    {
-        if (!$this->horaires->contains($horaire)) {
-            $this->horaires->add($horaire);
-            $horaire->setZooArcadia($this);
-        }
-
-        return $this;
-    }
-
-    public function removeHoraire(Horaire $horaire): static
-    {
-        if ($this->horaires->removeElement($horaire)) {
-            // set the owning side to null (unless already changed)
-            if ($horaire->getZooArcadia() === $this) {
-                $horaire->setZooArcadia(null);
             }
         }
 

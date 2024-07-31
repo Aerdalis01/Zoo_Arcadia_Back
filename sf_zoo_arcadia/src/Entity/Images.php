@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ImageZooRepository;
+use App\Repository\ImagesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ImageZooRepository::class)]
-class ImageZoo
+#[ORM\Entity(repositoryClass: ImagesRepository::class)]
+class Images
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,11 +20,8 @@ class ImageZoo
     private ?string $imagePath = null;
 
     #[ORM\Column]
-    private ?string $imagesubDirectory = null;
+    private ?string $imageSubDirectory = null;
 
-
-    #[ORM\OneToOne(inversedBy: 'habitats', orphanRemoval: true)]
-    private ?Habitats $habitats = null;
     
 
 
@@ -60,25 +57,14 @@ class ImageZoo
 
     public function getImageSubDirectory(): string
     {
-        return $this->imagesubDirectory;
+        return $this->imageSubDirectory;
     }
 
-    public function setImageSubDirectory(string $imagesubDirectory): static
+    public function setImageSubDirectory(string $imageSubDirectory): static
     {
-        $this->imagesubDirectory = $imagesubDirectory;
+        $this->imageSubDirectory = $imageSubDirectory;
 
         return $this;
     }
 
-    public function getHabitats(): ?Habitats
-    {
-        return $this->habitats;
-    }
-
-    public function setHabitats(?Habitats $habitats): static
-    {
-        $this->habitats = $habitats;
-
-        return $this;
-    }
 }

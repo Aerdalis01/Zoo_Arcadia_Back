@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\ImageZoo;
+use App\Entity\Images;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<ImageZoo>
  *
- * @method ImageZoo|null find($id, $lockMode = null, $lockVersion = null)
- * @method ImageZoo|null findOneBy(array $criteria, array $orderBy = null)
- * @method ImageZoo[]    findAll()
- * @method ImageZoo[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Images|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Images|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Images[]    findAll()
+ * @method Images[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ImageZooRepository extends ServiceEntityRepository
+class ImagesRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ImageZoo::class);
+        parent::__construct($registry, Images::class);
     }
 
 //    /**
-//     * @return ImageZoo[] Returns an array of ImageZoo objects
+//     * @return Images[] Returns an array of ImageZoo objects
 //     */
 //    public function findByExampleField($value): array
 //    {

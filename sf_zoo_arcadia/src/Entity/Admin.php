@@ -15,8 +15,6 @@ class Admin extends User
     #[ORM\OneToMany(targetEntity: Consultation::class, mappedBy: 'admin')]
     private Collection $consultations;
 
-    #[ORM\OneToMany(targetEntity: services::class, mappedBy: 'admin')]
-    private Collection $service;
 
     #[ORM\OneToMany(targetEntity: animal::class, mappedBy: 'admin')]
     private Collection $animal;
@@ -24,17 +22,13 @@ class Admin extends User
     #[ORM\OneToMany(targetEntity: habitats::class, mappedBy: 'admin')]
     private Collection $habitats;
 
-    #[ORM\OneToMany(targetEntity: horaire::class, mappedBy: 'admin')]
-    private Collection $horaire;
 
     public function __construct()
     {
         $this->compteRenduVets = new ArrayCollection();
         $this->consultations = new ArrayCollection();
-        $this->service = new ArrayCollection();
         $this->animal = new ArrayCollection();
         $this->habitats = new ArrayCollection();
-        $this->horaire = new ArrayCollection();
     }
 
     /**
@@ -97,35 +91,6 @@ class Admin extends User
         return $this;
     }
 
-    /**
-     * @return Collection<int, services>
-     */
-    public function getService(): Collection
-    {
-        return $this->service;
-    }
-
-    public function addService(services $service): static
-    {
-        if (!$this->service->contains($service)) {
-            $this->service->add($service);
-            $service->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeService(services $service): static
-    {
-        if ($this->service->removeElement($service)) {
-            // set the owning side to null (unless already changed)
-            if ($service->getAdmin() === $this) {
-                $service->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, animal>
@@ -187,34 +152,6 @@ class Admin extends User
         return $this;
     }
 
-    /**
-     * @return Collection<int, horaire>
-     */
-    public function getHoraire(): Collection
-    {
-        return $this->horaire;
-    }
 
-    public function addHoraire(horaire $horaire): static
-    {
-        if (!$this->horaire->contains($horaire)) {
-            $this->horaire->add($horaire);
-            $horaire->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeHoraire(horaire $horaire): static
-    {
-        if ($this->horaire->removeElement($horaire)) {
-            // set the owning side to null (unless already changed)
-            if ($horaire->getAdmin() === $this) {
-                $horaire->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
     
 }

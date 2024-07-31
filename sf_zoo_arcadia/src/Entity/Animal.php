@@ -24,9 +24,6 @@ class Animal
     #[ORM\ManyToOne(inversedBy: 'animals')]
     private ?Habitats $habitats = null;
 
-    #[ORM\ManyToOne(inversedBy: 'animal')]
-    private ?Race $race = null;
-
     #[ORM\OneToMany(targetEntity: RapportAlimentation::class, mappedBy: 'animal')]
     private Collection $rapportAlimentations;
 
@@ -42,8 +39,6 @@ class Animal
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?ImageZoo $imageZoo = null;
 
     public function __construct()
     {
@@ -93,17 +88,6 @@ class Animal
         return $this;
     }
 
-    public function getRace(): ?Race
-    {
-        return $this->race;
-    }
-
-    public function setRace(?Race $race): static
-    {
-        $this->race = $race;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, RapportAlimentation>
@@ -198,16 +182,5 @@ class Animal
         return $this;
     }
 
-    public function getImageZoo(): ?ImageZoo
-    {
-        return $this->imageZoo;
-    }
-
-    public function setImageZoo(?ImageZoo $imageZoo): static
-    {
-        $this->imageZoo = $imageZoo;
-
-        return $this;
-    }
 
 }

@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\HoraireRepository;
+use App\Repository\HorairesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: HoraireRepository::class)]
-class Horaire
+#[ORM\Entity(repositoryClass: HorairesRepository::class)]
+class Horaires
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,11 +23,6 @@ class Horaire
     #[ORM\Column(type: Types::JSON)]
     private array $heureFermeture = [];
 
-    #[ORM\ManyToOne(inversedBy: 'horaires')]
-    private ?ZooArcadia $ZooArcadia = null;
-
-    #[ORM\ManyToOne(inversedBy: 'horaire')]
-    private ?Admin $admin = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -76,29 +71,6 @@ class Horaire
         return $this;
     }
 
-    public function getZooArcadia(): ?ZooArcadia
-    {
-        return $this->ZooArcadia;
-    }
-
-    public function setZooArcadia(?ZooArcadia $ZooArcadia): static
-    {
-        $this->ZooArcadia = $ZooArcadia;
-
-        return $this;
-    }
-
-    public function getAdmin(): ?Admin
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?Admin $admin): static
-    {
-        $this->admin = $admin;
-
-        return $this;
-    }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

@@ -29,9 +29,6 @@ class Habitats
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToOne(inversedBy: 'habitats', cascade: ['persist', 'remove'])]
-    private ?ImageZoo $imageZoo = null;
-
     #[ORM\ManyToOne(targetEntity: ZooArcadia::class, inversedBy: 'habitats', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?ZooArcadia $zooArcadia = null;
@@ -170,16 +167,5 @@ class Habitats
 
         return $this;
     }
-    
-    public function getImageZoo(): ?ImageZoo
-    {
-        return $this->imageZoo;
-    }
 
-    public function setImageZoo(?ImageZoo $imageZoo): static
-    {
-        $this->imageZoo = $imageZoo;
-
-        return $this;
-    }
 }
