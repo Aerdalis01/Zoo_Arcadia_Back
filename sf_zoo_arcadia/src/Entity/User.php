@@ -14,19 +14,22 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    protected ?int $id = null;
 
     #[ORM\Column(length: 25)]
-    private ?string $username = null;
+    protected ?string $username = null;
 
     #[ORM\Column(length: 25)]
-    private ?string $password = null;
+    protected ?string $password = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    protected ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    protected ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $email = null;
 
 
     public function getId(): ?int
@@ -82,4 +85,30 @@ class User
         return $this;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+    
+    public function isEmploye(): bool
+    {
+        return $this instanceof Employe;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this instanceof Admin;
+    }
+
+    public function isVeterinaire(): bool
+    {
+        return $this instanceof Veterinaire;
+    }
 }

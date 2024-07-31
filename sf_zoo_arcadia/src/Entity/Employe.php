@@ -9,25 +9,27 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Employe extends User
 {
+
     #[ORM\OneToMany(targetEntity: RapportAlimentation::class, mappedBy: 'employe')]
     private Collection $rapportAlimentations;
 
-    #[ORM\OneToMany(targetEntity: Alimentation::class, mappedBy: 'employe')]
-    private Collection $alimentations;
+
+    #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'employe')]
+    private Collection $avis;
 
     #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'employe')]
     private Collection $contacts;
 
-    #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'employe')]
-    private Collection $avis;
+    #[ORM\OneToMany(targetEntity: Services::class, mappedBy: 'employe')]
+    private Collection $services;
 
 
     public function __construct()
     {
         $this->rapportAlimentations = new ArrayCollection();
-        $this->alimentations = new ArrayCollection();
-        $this->contacts = new ArrayCollection();
         $this->avis = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     /**
@@ -51,7 +53,6 @@ class Employe extends User
     public function removeRapportAlimentation(RapportAlimentation $rapportAlimentation): static
     {
         if ($this->rapportAlimentations->removeElement($rapportAlimentation)) {
-            // set the owning side to null (unless already changed)
             if ($rapportAlimentation->getEmploye() === $this) {
                 $rapportAlimentation->setEmploye(null);
             }
@@ -61,33 +62,45 @@ class Employe extends User
     }
 
     /**
-     * @return Collection<int, Alimentation>
+     * @return Collection<int, Avis>
      */
-    public function getAlimentations(): Collection
+    public function getAvis(): Collection
     {
-        return $this->alimentations;
+        return $this->avis;
     }
 
-    public function addAlimentation(Alimentation $alimentation): static
+    public function addAvis(Avis $avis): static
     {
-        if (!$this->alimentations->contains($alimentation)) {
-            $this->alimentations->add($alimentation);
-            $alimentation->setEmploye($this);
+        if (!$this->avis->contains($avis)) {
+            $this->avis->add($avis);
+            $avis->setEmploye($this);
         }
 
         return $this;
     }
 
-    public function removeAlimentation(Alimentation $alimentation): static
+    public function removeAvis(Avis $avis): static
     {
-        if ($this->alimentations->removeElement($alimentation)) {
-            // set the owning side to null (unless already changed)
-            if ($alimentation->getEmploye() === $this) {
-                $alimentation->setEmploye(null);
+        if ($this->avis->removeElement($avis)) {
+            if ($avis->getEmploye() === $this) {
+                $avis->setEmploye(null);
             }
         }
 
         return $this;
+    }
+
+    public function validerAvis(Avis $avis): void
+    {
+    if($avis->getEmploye() === $this) {
+        $avis->setValide(true);
+    }
+    }
+    public function invaliderAvis(Avis $avis): void
+    {
+    if($avis->getEmploye() === $this) {
+        $avis->setValide(false);
+    }
     }
 
     /**
@@ -120,30 +133,45 @@ class Employe extends User
         return $this;
     }
 
-    /**
-     * @return Collection<int, Avis>
-     */
-    public function getAvis(): Collection
+    public function repondreContact(Contact $contact, string $reponse): void
     {
-        return $this->avis;
+        if ($this->contacts->contains($contact)) {
+            // Envoyer un email de réponse (logique d'envoi d'email ici)
+            $this->envoyerEmail($contact->getEmail(), $reponse);
+        }
     }
 
-    public function addAvi(Avis $avi): static
+    private function envoyerEmail(string $email, string $reponse): void
     {
-        if (!$this->avis->contains($avi)) {
-            $this->avis->add($avi);
-            $avi->setEmploye($this);
+        // Logique d'envoi d'email (peut utiliser SwiftMailer, Symfony Mailer, etc.)
+        // Exemple simplifié :
+        mail($email, 'Réponse à votre contact', $reponse);
+    }
+
+    /**
+     * @return Collection<int, Services>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Services $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+            $service->setEmploye($this);
         }
 
         return $this;
     }
 
-    public function removeAvi(Avis $avi): static
+    public function removeService(Services $service): static
     {
-        if ($this->avis->removeElement($avi)) {
+        if ($this->services->removeElement($service)) {
             // set the owning side to null (unless already changed)
-            if ($avi->getEmploye() === $this) {
-                $avi->setEmploye(null);
+            if ($service->getEmploye() === $this) {
+                $service->setEmploye(null);
             }
         }
 

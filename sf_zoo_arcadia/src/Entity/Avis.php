@@ -24,7 +24,7 @@ class Avis
     private ?int $note = null;
 
     #[ORM\Column]
-    private ?bool $approuve = null;
+    private ?bool $valide = false;
 
     #[ORM\ManyToOne(inversedBy: 'avis')]
     private ?ZooArcadia $ZooArcadia = null;
@@ -73,14 +73,14 @@ class Avis
         return $this;
     }
 
-    public function isApprouve(): ?bool
+    public function isValide(): ?bool
     {
-        return $this->approuve;
+        return $this->valide;
     }
 
-    public function setApprouve(bool $approuve): static
+    public function setValide(bool $valide): static
     {
-        $this->approuve = $approuve;
+        $this->valide = $valide;
 
         return $this;
     }

@@ -33,19 +33,12 @@ class Habitats
     #[ORM\JoinColumn(nullable: false)]
     private ?ZooArcadia $zooArcadia = null;
 
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitats', orphanRemoval: true)]
-    private Collection $animals;
 
     #[ORM\ManyToOne(inversedBy: 'habitats', cascade: ['persist', 'remove'])]
     private ?Admin $admin = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
-
-    public function __construct()
-    {
-        $this->animals = new ArrayCollection();
-    }
 
     
 
@@ -111,36 +104,6 @@ class Habitats
     public function setZooArcadia(?ZooArcadia $zooArcadia): self
     {
         $this->zooArcadia = $zooArcadia;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Animal>
-     */
-    public function getAnimals(): Collection
-    {
-        return $this->animals;
-    }
-
-    public function addAnimal(Animal $animal): static
-    {
-        if (!$this->animals->contains($animal)) {
-            $this->animals->add($animal);
-            $animal->setHabitats($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAnimal(Animal $animal): static
-    {
-        if ($this->animals->removeElement($animal)) {
-            // set the owning side to null (unless already changed)
-            if ($animal->getHabitats() === $this) {
-                $animal->setHabitats(null);
-            }
-        }
-
         return $this;
     }
 

@@ -26,8 +26,6 @@ class RapportAlimentation
     #[ORM\Column]
     private ?float $quantite = null;
 
-    #[ORM\ManyToOne(inversedBy: 'rapportAlimentations')]
-    private ?Animal $animal = null;
 
     #[ORM\ManyToOne(inversedBy: 'rapportAlimentations')]
     private ?Employe $employe = null;
@@ -88,17 +86,6 @@ class RapportAlimentation
         return $this;
     }
 
-    public function getAnimal(): ?Animal
-    {
-        return $this->animal;
-    }
-
-    public function setAnimal(?Animal $animal): static
-    {
-        $this->animal = $animal;
-
-        return $this;
-    }
 
     public function getEmploye(): ?Employe
     {

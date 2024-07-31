@@ -22,6 +22,9 @@ class Images
     #[ORM\Column]
     private ?string $imageSubDirectory = null;
 
+    #[ORM\ManyToOne(inversedBy: 'images')]
+    private ?Services $services = null;
+
     
 
 
@@ -63,6 +66,18 @@ class Images
     public function setImageSubDirectory(string $imageSubDirectory): static
     {
         $this->imageSubDirectory = $imageSubDirectory;
+
+        return $this;
+    }
+
+    public function getServices(): ?Services
+    {
+        return $this->services;
+    }
+
+    public function setServices(?Services $services): static
+    {
+        $this->services = $services;
 
         return $this;
     }

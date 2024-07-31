@@ -39,9 +39,6 @@ class ZooArcadia
     private Collection $avis;
 
 
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'zooArcadia', orphanRemoval: true)]
-    private Collection $animals;
-
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Carousel $carousel = null;
 
@@ -51,7 +48,6 @@ class ZooArcadia
     {
         $this->habitats = new ArrayCollection();
         $this->avis = new ArrayCollection();
-        $this->animals = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -173,36 +169,6 @@ class ZooArcadia
             // set the owning side to null (unless already changed)
             if ($avi->getZooArcadia() === $this) {
                 $avi->setZooArcadia(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Animal>
-     */
-    public function getAnimals(): Collection
-    {
-        return $this->animals;
-    }
-
-    public function addAnimal(Animal $animal): static
-    {
-        if (!$this->animals->contains($animal)) {
-            $this->animals->add($animal);
-            $animal->setZooArcadia($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAnimal(Animal $animal): static
-    {
-        if ($this->animals->removeElement($animal)) {
-            // set the owning side to null (unless already changed)
-            if ($animal->getZooArcadia() === $this) {
-                $animal->setZooArcadia(null);
             }
         }
 

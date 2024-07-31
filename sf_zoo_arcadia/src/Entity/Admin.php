@@ -16,9 +16,6 @@ class Admin extends User
     private Collection $consultations;
 
 
-    #[ORM\OneToMany(targetEntity: animal::class, mappedBy: 'admin')]
-    private Collection $animal;
-
     #[ORM\OneToMany(targetEntity: habitats::class, mappedBy: 'admin')]
     private Collection $habitats;
 
@@ -27,7 +24,6 @@ class Admin extends User
     {
         $this->compteRenduVets = new ArrayCollection();
         $this->consultations = new ArrayCollection();
-        $this->animal = new ArrayCollection();
         $this->habitats = new ArrayCollection();
     }
 
@@ -85,37 +81,6 @@ class Admin extends User
             // set the owning side to null (unless already changed)
             if ($consultation->getAdmin() === $this) {
                 $consultation->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * @return Collection<int, animal>
-     */
-    public function getAnimal(): Collection
-    {
-        return $this->animal;
-    }
-
-    public function addAnimal(animal $animal): static
-    {
-        if (!$this->animal->contains($animal)) {
-            $this->animal->add($animal);
-            $animal->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAnimal(animal $animal): static
-    {
-        if ($this->animal->removeElement($animal)) {
-            // set the owning side to null (unless already changed)
-            if ($animal->getAdmin() === $this) {
-                $animal->setAdmin(null);
             }
         }
 

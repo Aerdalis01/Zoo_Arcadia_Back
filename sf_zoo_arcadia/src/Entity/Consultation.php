@@ -19,16 +19,11 @@ class Consultation
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\ManyToMany(targetEntity: animal::class, inversedBy: 'consultations')]
-    private Collection $animal;
+
 
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     private ?admin $admin = null;
 
-    public function __construct()
-    {
-        $this->animal = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -47,29 +42,6 @@ class Consultation
         return $this;
     }
 
-    /**
-     * @return Collection<int, animal>
-     */
-    public function getAnimal(): Collection
-    {
-        return $this->animal;
-    }
-
-    public function addAnimal(animal $animal): static
-    {
-        if (!$this->animal->contains($animal)) {
-            $this->animal->add($animal);
-        }
-
-        return $this;
-    }
-
-    public function removeAnimal(animal $animal): static
-    {
-        $this->animal->removeElement($animal);
-
-        return $this;
-    }
 
     public function getAdmin(): ?admin
     {

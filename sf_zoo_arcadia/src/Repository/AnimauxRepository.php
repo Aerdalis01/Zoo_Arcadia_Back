@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\Animal;
+use App\Entity\Animaux;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Animal>
+ * @extends ServiceEntityRepository<Animaux>
  *
- * @method Animal|null find($id, $lockMode = null, $lockVersion = null)
- * @method Animal|null findOneBy(array $criteria, array $orderBy = null)
- * @method Animal[]    findAll()
- * @method Animal[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Animaux|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Animaux|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Animaux[]    findAll()
+ * @method Animaux[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AnimalRepository extends ServiceEntityRepository
+class AnimauxRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Animal::class);
+        parent::__construct($registry, Animaux::class);
     }
 
 //    /**
-//     * @return Animal[] Returns an array of Animal objects
+//     * @return Animal[] Returns an array of Animaux objects
 //     */
 //    public function findByExampleField($value): array
 //    {
