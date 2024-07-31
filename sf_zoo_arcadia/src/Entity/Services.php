@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'role', type: 'string')]
-#[ORM\DiscriminatorMap(['services' => Services::class, 'restaurant' => Restaurant::class, 'visite_guidee' => VisiteGuidee::class, 'petit_train' => PetitTrain::class])]
+#[ORM\DiscriminatorMap(['services' => Services::class, 'restaurant' => Restaurant::class, 'visite_guidee' => VisiteGuidee::class, 'petit_train' => PetitTrain::class, 'info_service' => InfoService::class])]
 
-class Services
+abstract class Services
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -40,9 +40,13 @@ class Services
     #[ORM\ManyToOne(inversedBy: 'services')]
     private ?Employe $employe = null;
 
+    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service')]
+    private Collection $sousServices;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
+        $this->sousServices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -148,6 +152,36 @@ class Services
     public function setEmploye(?Employe $employe): static
     {
         $this->employe = $employe;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SousService>
+     */
+    public function getSousServices(): Collection
+    {
+        return $this->sousServices;
+    }
+
+    public function addSousService(SousService $sousService): static
+    {
+        if (!$this->sousServices->contains($sousService)) {
+            $this->sousServices->add($sousService);
+            $sousService->setService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSousService(SousService $sousService): static
+    {
+        if ($this->sousServices->removeElement($sousService)) {
+            // set the owning side to null (unless already changed)
+            if ($sousService->getService() === $this) {
+                $sousService->setService(null);
+            }
+        }
 
         return $this;
     }

@@ -25,7 +25,8 @@ class Images
     #[ORM\ManyToOne(inversedBy: 'images')]
     private ?Services $services = null;
 
-    
+    #[ORM\ManyToOne(inversedBy: 'image')]
+    private ?SousService $sousService = null;
 
 
     public function getId(): ?int
@@ -78,6 +79,18 @@ class Images
     public function setServices(?Services $services): static
     {
         $this->services = $services;
+
+        return $this;
+    }
+
+    public function getSousService(): ?SousService
+    {
+        return $this->sousService;
+    }
+
+    public function setSousService(?SousService $sousService): static
+    {
+        $this->sousService = $sousService;
 
         return $this;
     }
