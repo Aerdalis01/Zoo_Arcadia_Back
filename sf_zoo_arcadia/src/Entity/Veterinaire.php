@@ -12,13 +12,13 @@ class Veterinaire extends User
     #[ORM\OneToMany(targetEntity: CompteRenduVet::class, mappedBy: 'veterinaire')]
     private Collection $compteRenduVets;
 
-    #[ORM\OneToMany(targetEntity: Alimentation::class, mappedBy: 'veterinaire')]
-    private Collection $alimentations;
+    #[ORM\OneToMany(targetEntity: CommentairesHabitat::class, mappedBy: 'veterinaire')]
+    private Collection $commentairesHabitats;
 
     public function __construct()
     {
-        $this->compteRenduVets = new ArrayCollection();
-        $this->alimentations = new ArrayCollection();
+        $this->compteRenduVets= new ArrayCollection();
+        $this->commentairesHabitats = new ArrayCollection();
     }
 
     /**
@@ -52,32 +52,33 @@ class Veterinaire extends User
     }
 
     /**
-     * @return Collection<int, Alimentation>
+     * @return Collection<int, CommentairesHabitat>
      */
-    public function getAlimentations(): Collection
+    public function getCommentairesHabitats(): Collection
     {
-        return $this->alimentations;
+        return $this->commentairesHabitats;
     }
 
-    public function addAlimentation(Alimentation $alimentation): static
+    public function addCommentairesHabitat(CommentairesHabitat $commentairesHabitat): static
     {
-        if (!$this->alimentations->contains($alimentation)) {
-            $this->alimentations->add($alimentation);
-            $alimentation->setVeterinaire($this);
+        if (!$this->commentairesHabitats->contains($commentairesHabitat)) {
+            $this->commentairesHabitats->add($commentairesHabitat);
+            $commentairesHabitat->setVeterinaire($this);
         }
 
         return $this;
     }
 
-    public function removeAlimentation(Alimentation $alimentation): static
+    public function removeCommentairesHabitat(CommentairesHabitat $commentairesHabitat): static
     {
-        if ($this->alimentations->removeElement($alimentation)) {
+        if ($this->commentairesHabitats->removeElement($commentairesHabitat)) {
             // set the owning side to null (unless already changed)
-            if ($alimentation->getveterinaire() === $this) {
-                $alimentation->setVeterinaire(null);
+            if ($commentairesHabitat->getVeterinaire() === $this) {
+                $commentairesHabitat->setVeterinaire(null);
             }
         }
 
         return $this;
     }
+
 }

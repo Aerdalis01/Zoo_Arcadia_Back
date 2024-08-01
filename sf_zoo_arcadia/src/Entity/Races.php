@@ -18,6 +18,14 @@ class Races
     #[ORM\Column(length: 25)]
     private ?string $nom = null;
 
+    #[ORM\OneToMany(targetEntity: Animaux::class, mappedBy: 'race')]
+    private Collection $animaux;
+
+    public function __construct()
+    {
+        $this->animaux = new ArrayCollection();
+    }
+
 
 
     public function getId(): ?int
@@ -33,6 +41,36 @@ class Races
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Animaux>
+     */
+    public function getAnimaux(): Collection
+    {
+        return $this->animaux;
+    }
+
+    public function addAnimaux(Animaux $animaux): static
+    {
+        if (!$this->animaux->contains($animaux)) {
+            $this->animaux->add($animaux);
+            $animaux->setRace($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnimaux(Animaux $animaux): static
+    {
+        if ($this->animaux->removeElement($animaux)) {
+            // set the owning side to null (unless already changed)
+            if ($animaux->getRace() === $this) {
+                $animaux->setRace(null);
+            }
+        }
 
         return $this;
     }

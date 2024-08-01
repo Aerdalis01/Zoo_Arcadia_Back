@@ -28,6 +28,12 @@ class Images
     #[ORM\ManyToOne(inversedBy: 'image')]
     private ?SousService $sousService = null;
 
+    #[ORM\ManyToOne(inversedBy: 'images')]
+    private ?Habitats $habitats = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Animaux $animal = null;
+
 
     public function getId(): ?int
     {
@@ -91,6 +97,30 @@ class Images
     public function setSousService(?SousService $sousService): static
     {
         $this->sousService = $sousService;
+
+        return $this;
+    }
+
+    public function getHabitats(): ?Habitats
+    {
+        return $this->habitats;
+    }
+
+    public function setHabitats(?Habitats $habitats): static
+    {
+        $this->habitats = $habitats;
+
+        return $this;
+    }
+
+    public function getAnimal(): ?Animaux
+    {
+        return $this->animal;
+    }
+
+    public function setAnimal(?Animaux $animal): static
+    {
+        $this->animal = $animal;
 
         return $this;
     }

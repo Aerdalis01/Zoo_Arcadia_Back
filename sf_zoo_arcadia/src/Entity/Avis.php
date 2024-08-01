@@ -18,7 +18,7 @@ class Avis
     private ?string $pseudo = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $text = null;
+    private ?string $commentaireAvis = null;
 
     #[ORM\Column]
     private ?int $note = null;
@@ -31,6 +31,9 @@ class Avis
 
     #[ORM\ManyToOne(inversedBy: 'avis')]
     private ?Employe $employe = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
     {
@@ -49,14 +52,14 @@ class Avis
         return $this;
     }
 
-    public function getText(): ?string
+    public function getCommentaireAvis(): ?string
     {
-        return $this->text;
+        return $this->commentaireAvis;
     }
 
-    public function setText(string $text): static
+    public function setCommentaireAvis(string $commentaireAvis): static
     {
-        $this->text = $text;
+        $this->commentaireAvis = $commentaireAvis;
 
         return $this;
     }
@@ -105,6 +108,18 @@ class Avis
     public function setEmploye(?employe $employe): static
     {
         $this->employe = $employe;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

@@ -19,22 +19,11 @@ class CompteRenduVet
     private ?string $commentaireEtat = null;
 
     #[ORM\ManyToOne(inversedBy: 'compteRenduVets')]
-    private ?Veterinaire $Vétérinaire = null;
+    private ?Veterinaire $veterinaire= null;
 
-    #[ORM\OneToMany(targetEntity: RapportAlimentation::class, mappedBy: 'compteRenduVet')]
-    private Collection $Alimentation;
+    #[ORM\ManyToOne(inversedBy: 'compteRenduVet')]
+    private ?Animaux $animaux = null;
 
-    #[ORM\OneToMany(targetEntity: Alimentation::class, mappedBy: 'compteRenduVet')]
-    private Collection $alimentations;
-
-    #[ORM\ManyToOne(inversedBy: 'compteRenduVets')]
-    private ?admin $admin = null;
-
-    public function __construct()
-    {
-        $this->Alimentation = new ArrayCollection();
-        $this->alimentations = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -55,62 +44,25 @@ class CompteRenduVet
 
     public function getVeterinaire(): ?Veterinaire
     {
-        return $this->Vétérinaire;
+        return $this->veterinaire;
     }
 
-    public function setVeterinaire(?Veterinaire $Vétérinaire): static
+    public function setVeterinaire(?Veterinaire $veterinaire): static
     {
-        $this->Vétérinaire = $Vétérinaire;
+        $this->veterinaire = $veterinaire;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, RapportAlimentation>
-     */
-    public function getAlimentation(): Collection
+
+    public function getAnimaux(): ?Animaux
     {
-        return $this->Alimentation;
+        return $this->animaux;
     }
 
-    public function addAlimentation(RapportAlimentation $alimentation): static
+    public function setAnimaux(?Animaux $animaux): static
     {
-        if (!$this->Alimentation->contains($alimentation)) {
-            $this->Alimentation->add($alimentation);
-            $alimentation->setCompteRenduVet($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAlimentation(RapportAlimentation $alimentation): static
-    {
-        if ($this->Alimentation->removeElement($alimentation)) {
-            // set the owning side to null (unless already changed)
-            if ($alimentation->getCompteRenduVet() === $this) {
-                $alimentation->setCompteRenduVet(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Alimentation>
-     */
-    public function getAlimentations(): Collection
-    {
-        return $this->alimentations;
-    }
-
-    public function getAdmin(): ?admin
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?admin $admin): static
-    {
-        $this->admin = $admin;
+        $this->animaux = $animaux;
 
         return $this;
     }

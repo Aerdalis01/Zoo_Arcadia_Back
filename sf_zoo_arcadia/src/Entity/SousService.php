@@ -8,7 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SousServiceRepository::class)]
-class SousService
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'role', type: 'string')]
+#[ORM\DiscriminatorMap(['sous_services' => SousService::class, 'restaurant' => Restaurant::class, 'Snack' => Snack::class, 'camion_glace' => CamionGlace::class])]
+abstract class SousService
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,6 +29,12 @@ class SousService
 
     #[ORM\ManyToOne(inversedBy: 'sousServices')]
     private ?Services $service = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
     {
@@ -82,7 +91,6 @@ class SousService
     public function removeImage(Images $image): static
     {
         if ($this->image->removeElement($image)) {
-            // set the owning side to null (unless already changed)
             if ($image->getSousService() === $this) {
                 $image->setSousService(null);
             }
@@ -90,6 +98,7 @@ class SousService
 
         return $this;
     }
+
 
     public function getService(): ?Services
     {
@@ -99,6 +108,30 @@ class SousService
     public function setService(?Services $service): static
     {
         $this->service = $service;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -30,8 +30,15 @@ class RapportAlimentation
     #[ORM\ManyToOne(inversedBy: 'rapportAlimentations')]
     private ?Employe $employe = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Alimentation')]
-    private ?CompteRenduVet $compteRenduVet = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'rapportAlimentations')]
+    private ?Animaux $animal = null;
 
     public function getId(): ?int
     {
@@ -99,14 +106,38 @@ class RapportAlimentation
         return $this;
     }
 
-    public function getCompteRenduVet(): ?CompteRenduVet
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->compteRenduVet;
+        return $this->createdAt;
     }
 
-    public function setCompteRenduVet(?CompteRenduVet $compteRenduVet): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->compteRenduVet = $compteRenduVet;
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getAnimal(): ?Animaux
+    {
+        return $this->animal;
+    }
+
+    public function setAnimal(?Animaux $animal): static
+    {
+        $this->animal = $animal;
 
         return $this;
     }

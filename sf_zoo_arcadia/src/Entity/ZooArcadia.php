@@ -42,12 +42,20 @@ class ZooArcadia
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Carousel $carousel = null;
 
+    #[ORM\OneToMany(targetEntity: Services::class, mappedBy: 'zooArcadia')]
+    private Collection $services;
+
+    #[ORM\OneToMany(targetEntity: Animaux::class, mappedBy: 'zooArcadia')]
+    private Collection $animaux;
+
     
 
     public function __construct()
     {
         $this->habitats = new ArrayCollection();
         $this->avis = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->animaux = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -183,6 +191,66 @@ class ZooArcadia
     public function setCarousel(?Carousel $carousel): static
     {
         $this->carousel = $carousel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Services>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Services $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+            $service->setZooArcadia($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Services $service): static
+    {
+        if ($this->services->removeElement($service)) {
+            // set the owning side to null (unless already changed)
+            if ($service->getZooArcadia() === $this) {
+                $service->setZooArcadia(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Animaux>
+     */
+    public function getAnimaux(): Collection
+    {
+        return $this->animaux;
+    }
+
+    public function addAnimaux(Animaux $animaux): static
+    {
+        if (!$this->animaux->contains($animaux)) {
+            $this->animaux->add($animaux);
+            $animaux->setZooArcadia($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnimaux(Animaux $animaux): static
+    {
+        if ($this->animaux->removeElement($animaux)) {
+            // set the owning side to null (unless already changed)
+            if ($animaux->getZooArcadia() === $this) {
+                $animaux->setZooArcadia(null);
+            }
+        }
 
         return $this;
     }

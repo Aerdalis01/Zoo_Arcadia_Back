@@ -19,10 +19,8 @@ class Consultation
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
-
-
     #[ORM\ManyToOne(inversedBy: 'consultations')]
-    private ?admin $admin = null;
+    private ?Animaux $animal = null;
 
 
     public function getId(): ?int
@@ -42,16 +40,16 @@ class Consultation
         return $this;
     }
 
-
-    public function getAdmin(): ?admin
+    public function getAnimal(): ?Animaux
     {
-        return $this->admin;
+        return $this->animal;
     }
 
-    public function setAdmin(?admin $admin): static
+    public function setAnimal(?Animaux $animal): static
     {
-        $this->admin = $admin;
+        $this->animal = $animal;
 
         return $this;
     }
+
 }

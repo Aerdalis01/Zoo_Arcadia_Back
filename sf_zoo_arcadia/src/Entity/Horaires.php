@@ -33,6 +33,9 @@ class Horaires
     #[ORM\ManyToOne(inversedBy: 'horaires')]
     private ?InfoService $infoService = null;
 
+    #[ORM\ManyToOne(inversedBy: 'horaires')]
+    private ?Admin $admin = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -107,6 +110,18 @@ class Horaires
     public function setInfoService(?InfoService $infoService): static
     {
         $this->infoService = $infoService;
+
+        return $this;
+    }
+
+    public function getAdmin(): ?Admin
+    {
+        return $this->admin;
+    }
+
+    public function setAdmin(?Admin $admin): static
+    {
+        $this->admin = $admin;
 
         return $this;
     }

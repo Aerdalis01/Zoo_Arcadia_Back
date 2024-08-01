@@ -9,83 +9,27 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Admin extends User
 {
-    #[ORM\OneToMany(targetEntity: CompteRenduVet::class, mappedBy: 'admin')]
-    private Collection $compteRenduVets;
-
-    #[ORM\OneToMany(targetEntity: Consultation::class, mappedBy: 'admin')]
-    private Collection $consultations;
-
-
     #[ORM\OneToMany(targetEntity: habitats::class, mappedBy: 'admin')]
     private Collection $habitats;
+
+    #[ORM\OneToMany(targetEntity: Services::class, mappedBy: 'admin')]
+    private Collection $services;
+
+    #[ORM\OneToMany(targetEntity: Animaux::class, mappedBy: 'admin')]
+    private Collection $animaux;
+
+    #[ORM\OneToMany(targetEntity: Horaires::class, mappedBy: 'admin')]
+    private Collection $horaires;
 
 
     public function __construct()
     {
-        $this->compteRenduVets = new ArrayCollection();
-        $this->consultations = new ArrayCollection();
         $this->habitats = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->animaux = new ArrayCollection();
+        $this->horaires = new ArrayCollection();
     }
 
-    /**
-     * @return Collection<int, CompteRenduVet>
-     */
-    public function getCompteRenduVets(): Collection
-    {
-        return $this->compteRenduVets;
-    }
-
-    public function addCompteRenduVet(CompteRenduVet $compteRenduVet): static
-    {
-        if (!$this->compteRenduVets->contains($compteRenduVet)) {
-            $this->compteRenduVets->add($compteRenduVet);
-            $compteRenduVet->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCompteRenduVet(CompteRenduVet $compteRenduVet): static
-    {
-        if ($this->compteRenduVets->removeElement($compteRenduVet)) {
-            // set the owning side to null (unless already changed)
-            if ($compteRenduVet->getAdmin() === $this) {
-                $compteRenduVet->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Consultation>
-     */
-    public function getConsultations(): Collection
-    {
-        return $this->consultations;
-    }
-
-    public function addConsultation(Consultation $consultation): static
-    {
-        if (!$this->consultations->contains($consultation)) {
-            $this->consultations->add($consultation);
-            $consultation->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeConsultation(Consultation $consultation): static
-    {
-        if ($this->consultations->removeElement($consultation)) {
-            // set the owning side to null (unless already changed)
-            if ($consultation->getAdmin() === $this) {
-                $consultation->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, habitats>
@@ -111,6 +55,96 @@ class Admin extends User
             // set the owning side to null (unless already changed)
             if ($habitat->getAdmin() === $this) {
                 $habitat->setAdmin(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Services>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Services $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+            $service->setAdmin($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Services $service): static
+    {
+        if ($this->services->removeElement($service)) {
+            // set the owning side to null (unless already changed)
+            if ($service->getAdmin() === $this) {
+                $service->setAdmin(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Animaux>
+     */
+    public function getAnimaux(): Collection
+    {
+        return $this->animaux;
+    }
+
+    public function addAnimaux(Animaux $animaux): static
+    {
+        if (!$this->animaux->contains($animaux)) {
+            $this->animaux->add($animaux);
+            $animaux->setAdmin($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnimaux(Animaux $animaux): static
+    {
+        if ($this->animaux->removeElement($animaux)) {
+            // set the owning side to null (unless already changed)
+            if ($animaux->getAdmin() === $this) {
+                $animaux->setAdmin(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Horaires>
+     */
+    public function getHoraires(): Collection
+    {
+        return $this->horaires;
+    }
+
+    public function addHoraire(Horaires $horaire): static
+    {
+        if (!$this->horaires->contains($horaire)) {
+            $this->horaires->add($horaire);
+            $horaire->setAdmin($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHoraire(Horaires $horaire): static
+    {
+        if ($this->horaires->removeElement($horaire)) {
+            // set the owning side to null (unless already changed)
+            if ($horaire->getAdmin() === $this) {
+                $horaire->setAdmin(null);
             }
         }
 

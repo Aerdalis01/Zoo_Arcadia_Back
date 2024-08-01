@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'role', type: 'string')]
-#[ORM\DiscriminatorMap(['services' => Services::class, 'restaurant' => Restaurant::class, 'visite_guidee' => VisiteGuidee::class, 'petit_train' => PetitTrain::class, 'info_service' => InfoService::class])]
+#[ORM\DiscriminatorMap(['services' => Services::class, 'restauration' => Restauration::class, 'visite_guidee' => VisiteGuidee::class, 'petit_train' => PetitTrain::class, 'info_service' => InfoService::class])]
 
 abstract class Services
 {
@@ -28,7 +28,7 @@ abstract class Services
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services')]
+    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services', cascade: ['persist', 'remove'])]
     private Collection $images;
 
     #[ORM\Column]
@@ -42,6 +42,12 @@ abstract class Services
 
     #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service')]
     private Collection $sousServices;
+
+    #[ORM\ManyToOne(inversedBy: 'services')]
+    private ?Admin $admin = null;
+
+    #[ORM\ManyToOne(inversedBy: 'services')]
+    private ?ZooArcadia $zooArcadia = null;
 
     public function __construct()
     {
@@ -182,6 +188,30 @@ abstract class Services
                 $sousService->setService(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAdmin(): ?Admin
+    {
+        return $this->admin;
+    }
+
+    public function setAdmin(?Admin $admin): static
+    {
+        $this->admin = $admin;
+
+        return $this;
+    }
+
+    public function getZooArcadia(): ?ZooArcadia
+    {
+        return $this->zooArcadia;
+    }
+
+    public function setZooArcadia(?ZooArcadia $zooArcadia): static
+    {
+        $this->zooArcadia = $zooArcadia;
 
         return $this;
     }
