@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Employe;
 use App\Entity\Veterinaire;
 use App\Entity\Admin;
-use App\Entity\MailerInterface;
+use App\Service\MailerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

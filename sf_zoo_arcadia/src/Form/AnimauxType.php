@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AnimalType extends AbstractType
+class AnimauxType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -22,6 +22,7 @@ class AnimalType extends AbstractType
                 'choice_label' => 'name',
             ])
             ->add('imagePath', TextType::class, [
+                'label' => 'Image (WEBP file)',
                 'mapped' => false, 
                 'required' => false,
             ])

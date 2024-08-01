@@ -7,7 +7,7 @@ use App\Entity\Races;
 use App\Entity\Images;
 use Doctrine\ORM\EntityManagerInterface;
 
-class AnimalService
+class AnimauxService
 {
     private $entityManager;
 

@@ -7,7 +7,7 @@ use App\Entity\Admin;
 use App\Entity\Horaires;
 use Doctrine\ORM\EntityManagerInterface;
 
-class HoraireService
+class HorairesService
 {
     private $entityManager;
 

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Contact;
-use App\Entity\MailerInterface;
+use App\Service\MailerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

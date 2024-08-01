@@ -2,7 +2,8 @@
 parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
     carousel_directory: '%kernel.project_dir%/public/uploads/images/carousel'
-    zoo_email: '%env(zooarcadia930@gmail.com)%'
+    env(ZOO_EMAIL): '%env(ZOO_EMAIL)%'
+    
 services:
     
     _defaults:
@@ -21,13 +22,14 @@ services:
 
     App\Service\MailerService:
         arguments:
-            $zooEmail: '%zoo_email%'
+            $zooEmail: '%env(ZOO_EMAIL)%'
         autowire: true
         autoconfigure: true
 
     App\Controller\ContactController:
         arguments:
             $mailer: '@App\Service\MailerService'
+            
 
     App\Controller\AdminController:
         arguments:
