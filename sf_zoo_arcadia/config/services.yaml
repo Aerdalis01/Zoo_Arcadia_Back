@@ -2,12 +2,14 @@
 parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
     carousel_directory: '%kernel.project_dir%/public/uploads/images/carousel'
-    zoo_email: 'zooarcadia930@gmail.com'
+    zoo_email: '%env(zooarcadia930@gmail.com)%'
 services:
     
     _defaults:
         autowire: true      
         autoconfigure: true 
+        bind:
+            $passwordHasher: '@security.password_hasher'
     
 
     App\:
@@ -30,4 +32,8 @@ services:
     App\Controller\AdminController:
         arguments:
             $mailer: '@App\Service\MailerService'
+    App\Service\UserService:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $passwordHasher: '@security.password_hasher'
 

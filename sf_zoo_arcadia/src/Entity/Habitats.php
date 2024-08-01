@@ -37,8 +37,6 @@ class Habitats
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updateAt = null;
 
     #[ORM\OneToMany(targetEntity: Animaux::class, mappedBy: 'habitats')]
     private Collection $animaux;
@@ -132,18 +130,6 @@ class Habitats
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdateAt(): ?\DateTimeImmutable
-    {
-        return $this->updateAt;
-    }
-
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): static
-    {
-        $this->updateAt = $updateAt;
 
         return $this;
     }
