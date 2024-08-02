@@ -27,7 +27,6 @@ class ContactController extends AbstractController
             $titre = $request->request->get('titre');
             $commentaire = $request->request->get('commentaire');
 
-          
             $contact = new Contact();
             $contact->setEmail($visiteurEmail);
             $contact->setTitre($titre);

@@ -21,8 +21,6 @@ class Carousel
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?ZooArcadia $zooArcadia = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
@@ -74,18 +72,6 @@ class Carousel
     public function setZooArcadia(?ZooArcadia $zooArcadia): static
     {
         $this->zooArcadia = $zooArcadia;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
 
         return $this;
     }

@@ -3,24 +3,26 @@
 namespace App\Service;
 
 use App\Entity\Animaux;
-use App\Entity\Races;
+use App\Entity\Habitats;
 use App\Entity\Images;
+use App\Entity\Races;
+use App\Entity\ZooArcadia;
 use Doctrine\ORM\EntityManagerInterface;
 
 class AnimauxService
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    public function createAnimal(string $prenom, string $createdAt, string $raceId, string $imagePath, string $imageSubDirectory): Animaux
+    public function createAnimal(string $prenom, string $raceName, ?string $imagePath, ?string $imageSubDirectory, ?Habitats $habitat, ?ZooArcadia $zooArcadia): Animaux
     {
-        $race = $this->entityManager->getRepository(Races::class)->find($raceId);
+        $race = $this->entityManager->getRepository(Races::class)->findOneBy(['name' => $raceName]);
         if (!$race) {
-            throw new \InvalidArgumentException('Invalid race ID specified.');
+            throw new \InvalidArgumentException('Invalid race name specified.');
         }
 
         $image = new Images();
@@ -29,56 +31,51 @@ class AnimauxService
 
         $animal = new Animaux();
         $animal->setPrenom($prenom);
-        $animal->setCreatedAt(new \DateTimeImmutable($createdAt));
+        $animal->setCreatedAt(new \DateTimeImmutable()); // Date automatique
         $animal->setRace($race);
         $animal->setImage($image);
+        $animal->setHabitats($habitat);
+        $animal->setZooArcadia($zooArcadia);
 
+        $this->entityManager->persist($image);
         $this->entityManager->persist($animal);
         $this->entityManager->flush();
 
         return $animal;
     }
 
-    public function updateAnimal(Animaux $animal, array $newData)
+    public function updateAnimal(Animaux $animal, array $newData): Animaux
     {
-        if (isset($newData['prenom']) && $animal->getPrenom() !== $newData['prenom']) {
-            $animal->setPrenom($newData['prenom']);
+        $animal->setPrenom($newData['prenom']);
+        $animal->setCreatedAt(new \DateTimeImmutable($newData['createdAt']));
+        
+        $race = $this->entityManager->getRepository(Races::class)->findOneBy(['name' => $newData['raceName']]);
+        if (!$race) {
+            throw new \InvalidArgumentException('Invalid race name specified.');
+        }
+        $animal->setRace($race);
+
+        $image = $animal->getImage();
+        if ($image) {
+            $image->setImagePath($newData['imagePath']);
+            $image->setImageSubDirectory($newData['imageSubDirectory']);
+        } else {
+            $image = new Images();
+            $image->setImagePath($newData['imagePath']);
+            $image->setImageSubDirectory($newData['imageSubDirectory']);
+            $animal->setImage($image);
+            $this->entityManager->persist($image);
         }
 
-        if (isset($newData['createdAt'])) {
-            $animal->setCreatedAt(new \DateTimeImmutable($newData['createdAt']));
-        }
+        $animal->setHabitats($newData['habitat']);
+        $animal->setZooArcadia($newData['zooArcadia']);
 
-        if (isset($newData['raceId'])) {
-            $race = $this->entityManager->getRepository(Races::class)->find($newData['raceId']);
-            if ($race) {
-                $animal->setRace($race);
-            } else {
-                throw new \InvalidArgumentException('Invalid race ID specified.');
-            }
-        }
-
-        if (isset($newData['imagePath']) || isset($newData['imageSubDirectory'])) {
-            $image = $animal->getImage();
-            if (!$image) {
-                $image = new Images();
-                $animal->setImage($image);
-            }
-
-            if (isset($newData['imagePath'])) {
-                $image->setImagePath($newData['imagePath']);
-            }
-
-            if (isset($newData['imageAlt'])) {
-                $image->setImageSubDirectory($newData['imageSubDirectory']);
-            }
-        }
-
-        $animal->setUpdatedAt(new \DateTimeImmutable());
         $this->entityManager->flush();
+
+        return $animal;
     }
 
-    public function deleteAnimal(Animaux $animal)
+    public function deleteAnimal(Animaux $animal): void
     {
         $this->entityManager->remove($animal);
         $this->entityManager->flush();

@@ -26,7 +26,7 @@ class AdminController extends AbstractController
     {
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
-            $role = $request->request->get('role'); // employe, veterinaire, ou admin
+            $role = $request->request->get('role'); 
 
             if ($role === 'employe') {
                 $user = new Employe();

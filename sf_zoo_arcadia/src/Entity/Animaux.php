@@ -122,7 +122,6 @@ class Animaux
     public function removeRapportAlimentation(RapportAlimentation $rapportAlimentation): static
     {
         if ($this->rapportAlimentations->removeElement($rapportAlimentation)) {
-            // set the owning side to null (unless already changed)
             if ($rapportAlimentation->getAnimal() === $this) {
                 $rapportAlimentation->setAnimal(null);
             }
@@ -152,7 +151,6 @@ class Animaux
     public function removeConsultation(Consultation $consultation): static
     {
         if ($this->consultations->removeElement($consultation)) {
-            // set the owning side to null (unless already changed)
             if ($consultation->getAnimal() === $this) {
                 $consultation->setAnimal(null);
             }

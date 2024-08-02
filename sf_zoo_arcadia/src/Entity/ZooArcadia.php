@@ -22,8 +22,6 @@ class ZooArcadia
     #[ORM\Column(length: 75)]
     private ?string $adresse = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -87,17 +85,6 @@ class ZooArcadia
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
