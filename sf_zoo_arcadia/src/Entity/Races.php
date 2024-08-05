@@ -21,8 +21,9 @@ class Races
     #[ORM\OneToMany(targetEntity: Animaux::class, mappedBy: 'race')]
     private Collection $animaux;
 
-    public function __construct()
+    public function __construct(string $nom)
     {
+        $this->nom = $nom;
         $this->animaux = new ArrayCollection();
     }
 
@@ -66,7 +67,6 @@ class Races
     public function removeAnimaux(Animaux $animaux): static
     {
         if ($this->animaux->removeElement($animaux)) {
-            // set the owning side to null (unless already changed)
             if ($animaux->getRace() === $this) {
                 $animaux->setRace(null);
             }

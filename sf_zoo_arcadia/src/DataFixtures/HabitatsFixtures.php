@@ -6,8 +6,9 @@ use App\Entity\Habitats;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 
-class HabitatsFixtures extends Fixture implements DependentFixtureInterface
+class HabitatsFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -45,8 +46,8 @@ class HabitatsFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
 
         $this->addReference('habitat_marais', $habitat1);
-        $this->addReference('habitat_Savane', $habitat2);
-        $this->addReference('habitat_Jungle', $habitat3);
+        $this->addReference('habitat_savane', $habitat2);
+        $this->addReference('habitat_jungle', $habitat3);
     }
 
     public function getDependencies()
@@ -55,5 +56,9 @@ class HabitatsFixtures extends Fixture implements DependentFixtureInterface
             ZooArcadiaFixtures::class,
             ImagesFixtures::class,
         ];
+    }
+    public static function getGroups(): array
+    {
+        return ['group_habitats'];
     }
 }

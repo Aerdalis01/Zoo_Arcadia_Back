@@ -14,22 +14,26 @@ final class Version20240723121107 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Create ZooArcadia';
     }
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE zoo_arcadia ADD carousel_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE zoo_arcadia ADD CONSTRAINT FK_AF4DDFC5C1CE5B98 FOREIGN KEY (carousel_id) REFERENCES carousel (id)');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_AF4DDFC5C1CE5B98 ON zoo_arcadia (carousel_id)');
+        $this->addSql('CREATE TABLE zoo_arcadia (
+            id INT AUTO_INCREMENT NOT NULL,
+            nom VARCHAR(25) NOT NULL,
+            adresse VARCHAR(75) NOT NULL,
+            created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\',
+            updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\',
+            carousel_id INT DEFAULT NULL,
+            PRIMARY KEY(id)
+        ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
     }
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE zoo_arcadia DROP FOREIGN KEY FK_AF4DDFC5C1CE5B98');
-        $this->addSql('DROP INDEX UNIQ_AF4DDFC5C1CE5B98 ON zoo_arcadia');
-        $this->addSql('ALTER TABLE zoo_arcadia DROP carousel_id');
+        
+        $this->addSql('DROP TABLE zoo_arcadia');
+
     }
 }

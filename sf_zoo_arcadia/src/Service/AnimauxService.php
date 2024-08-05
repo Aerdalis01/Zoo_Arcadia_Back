@@ -18,11 +18,11 @@ class AnimauxService
         $this->entityManager = $entityManager;
     }
 
-    public function createAnimal(string $prenom, string $raceName, ?string $imagePath, ?string $imageSubDirectory, ?Habitats $habitat, ?ZooArcadia $zooArcadia): Animaux
+    public function createAnimal(string $prenom, string $raceNom, ?string $imagePath, ?string $imageSubDirectory, ?Habitats $habitat, ?ZooArcadia $zooArcadia): Animaux
     {
-        $race = $this->entityManager->getRepository(Races::class)->findOneBy(['name' => $raceName]);
+        $race = $this->entityManager->getRepository(Races::class)->findOneBy(['nom' => $raceNom]);
         if (!$race) {
-            throw new \InvalidArgumentException('Invalid race name specified.');
+            throw new \InvalidArgumentException('Race not found: ' . $raceNom);
         }
 
         $image = new Images();
@@ -31,7 +31,7 @@ class AnimauxService
 
         $animal = new Animaux();
         $animal->setPrenom($prenom);
-        $animal->setCreatedAt(new \DateTimeImmutable()); // Date automatique
+        $animal->setCreatedAt(new \DateTimeImmutable()); 
         $animal->setRace($race);
         $animal->setImage($image);
         $animal->setHabitats($habitat);
@@ -42,42 +42,5 @@ class AnimauxService
         $this->entityManager->flush();
 
         return $animal;
-    }
-
-    public function updateAnimal(Animaux $animal, array $newData): Animaux
-    {
-        $animal->setPrenom($newData['prenom']);
-        $animal->setCreatedAt(new \DateTimeImmutable($newData['createdAt']));
-        
-        $race = $this->entityManager->getRepository(Races::class)->findOneBy(['name' => $newData['raceName']]);
-        if (!$race) {
-            throw new \InvalidArgumentException('Invalid race name specified.');
-        }
-        $animal->setRace($race);
-
-        $image = $animal->getImage();
-        if ($image) {
-            $image->setImagePath($newData['imagePath']);
-            $image->setImageSubDirectory($newData['imageSubDirectory']);
-        } else {
-            $image = new Images();
-            $image->setImagePath($newData['imagePath']);
-            $image->setImageSubDirectory($newData['imageSubDirectory']);
-            $animal->setImage($image);
-            $this->entityManager->persist($image);
-        }
-
-        $animal->setHabitats($newData['habitat']);
-        $animal->setZooArcadia($newData['zooArcadia']);
-
-        $this->entityManager->flush();
-
-        return $animal;
-    }
-
-    public function deleteAnimal(Animaux $animal): void
-    {
-        $this->entityManager->remove($animal);
-        $this->entityManager->flush();
     }
 }

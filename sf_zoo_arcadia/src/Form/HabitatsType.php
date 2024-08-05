@@ -29,12 +29,12 @@ class HabitatsType extends AbstractType
                 'label' => 'Zoo Arcadia'
             ])
             ->add('images', EntityType::class, [
-              'class' => Images::class,
-              'choice_label' => 'nom',
-              'label' => 'Images',
-              'multiple' => true,
-              'expanded' => true,
-              'required' => false,
+                'class' => Images::class,
+                'choice_label' => 'nom',
+                'label' => 'Images',
+                'multiple' => true,
+                'expanded' => true,
+                'required' => false,
           ]);
     }
 

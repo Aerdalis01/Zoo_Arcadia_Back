@@ -19,18 +19,7 @@ final class Version20240731112616 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE rapport_alimentation DROP FOREIGN KEY FK_2A93B0338E962C16');
-        $this->addSql('CREATE TABLE animaux (id INT AUTO_INCREMENT NOT NULL, prenom VARCHAR(25) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE animal DROP FOREIGN KEY FK_6AAB231FFFE875C9');
-        $this->addSql('ALTER TABLE animal DROP FOREIGN KEY FK_6AAB231F35D3C6F5');
-        $this->addSql('ALTER TABLE animal DROP FOREIGN KEY FK_6AAB231F642B8210');
-        $this->addSql('ALTER TABLE consultation_animal DROP FOREIGN KEY FK_B606B4328E962C16');
-        $this->addSql('ALTER TABLE consultation_animal DROP FOREIGN KEY FK_B606B43262FF6CDF');
-        $this->addSql('DROP TABLE animal');
-        $this->addSql('DROP TABLE consultation_animal');
-        $this->addSql('DROP INDEX IDX_2A93B0338E962C16 ON rapport_alimentation');
-        $this->addSql('ALTER TABLE rapport_alimentation DROP animal_id');
+
     }
 
     public function down(Schema $schema): void

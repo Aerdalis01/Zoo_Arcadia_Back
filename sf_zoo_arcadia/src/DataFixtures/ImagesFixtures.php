@@ -5,8 +5,9 @@ namespace App\DataFixtures;
 use App\Entity\Images;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 
-class ImagesFixtures extends Fixture
+class ImagesFixtures extends Fixture implements FixtureGroupInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -36,5 +37,9 @@ class ImagesFixtures extends Fixture
         $this->addReference('Marais', $image1);
         $this->addReference('Savane', $image2);
         $this->addReference('Jungle', $image3);
+    }
+    public static function getGroups(): array
+    {
+        return ['group_images'];
     }
 }
