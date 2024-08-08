@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Admin;
 use App\Entity\Animaux;
 use App\Entity\Habitats;
 use App\Entity\Images;
@@ -18,7 +19,7 @@ class AnimauxService
         $this->entityManager = $entityManager;
     }
 
-    public function createAnimal(string $prenom, string $raceNom, ?string $imagePath, ?string $imageSubDirectory, ?Habitats $habitat, ?ZooArcadia $zooArcadia): Animaux
+    public function createAnimal(string $prenom, string $raceNom, ?string $imagePath, ?string $imageSubDirectory, ?Habitats $habitat, ?ZooArcadia $zooArcadia, ?Admin $admin): Animaux
     {
         $race = $this->entityManager->getRepository(Races::class)->findOneBy(['nom' => $raceNom]);
         if (!$race) {
@@ -36,6 +37,7 @@ class AnimauxService
         $animal->setImage($image);
         $animal->setHabitats($habitat);
         $animal->setZooArcadia($zooArcadia);
+        $animal->setAdmin($admin);
 
         $this->entityManager->persist($image);
         $this->entityManager->persist($animal);

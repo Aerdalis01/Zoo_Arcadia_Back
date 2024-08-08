@@ -43,7 +43,8 @@ class HabitatsController extends AbstractController
             $habitat = $this->habitatsService->createHabitat(
                 $data->getNom(),
                 $data->getDescription(),
-                $data->getZooArcadia()
+                $data->getZooArcadia(),
+                $data->getImage()
             );
 
             foreach ($data->getImages() as $image) {

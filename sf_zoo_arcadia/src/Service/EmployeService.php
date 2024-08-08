@@ -38,6 +38,14 @@ class EmployeService
             $this->entityManager->flush();
         }
     }
+    public function invaliderAvis($avisId)
+    {
+        $avis = $this->avisRepository->find($avisId);
+        if ($avis) {
+            $avis->setValide(false);
+            $this->entityManager->flush();
+        }
+    }
 
     public function repondreContact($contactId, $reponse)
     {

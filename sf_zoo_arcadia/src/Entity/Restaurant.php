@@ -7,9 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Restaurant extends SousService
 {
-  public function getMenuPath(): ?string
+    public function getMenuPath(): ?string
     {
-        foreach ($this->getImage() as $image) {
+        foreach ($this->getImages() as $image) {
             if ($image->getNom() === 'menu_restaurant') {
                 return $image->getImagePath();
             }

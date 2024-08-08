@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SousServiceRepository::class)]
 #[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'role', type: 'string')]
-#[ORM\DiscriminatorMap(['sous_services' => SousService::class, 'restaurant' => Restaurant::class, 'Snack' => Snack::class, 'camion_glace' => CamionGlace::class])]
+#[ORM\DiscriminatorColumn(name: 'Type_Sous_Services', type: 'string')]
+#[ORM\DiscriminatorMap(['sous_services' => SousService::class, 'restaurant' => Restaurant::class, 'snack' => Snack::class, 'camion_glace' => CamionGlace::class])]
 abstract class SousService
 {
     #[ORM\Id]
@@ -24,10 +24,11 @@ abstract class SousService
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'sousService')]
-    private Collection $image;
+    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'sousService',  cascade: ['remove'], orphanRemoval: true)]
+    private Collection $images;
 
     #[ORM\ManyToOne(inversedBy: 'sousServices')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Services $service = null;
 
     #[ORM\Column]
@@ -38,7 +39,7 @@ abstract class SousService
 
     public function __construct()
     {
-        $this->image = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -73,15 +74,15 @@ abstract class SousService
     /**
      * @return Collection<int, Images>
      */
-    public function getImage(): Collection
+    public function getImages(): Collection
     {
-        return $this->image;
+        return $this->images;
     }
 
     public function addImage(Images $image): static
     {
-        if (!$this->image->contains($image)) {
-            $this->image->add($image);
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
             $image->setSousService($this);
         }
 
@@ -90,7 +91,7 @@ abstract class SousService
 
     public function removeImage(Images $image): static
     {
-        if ($this->image->removeElement($image)) {
+        if ($this->images->removeElement($image)) {
             if ($image->getSousService() === $this) {
                 $image->setSousService(null);
             }

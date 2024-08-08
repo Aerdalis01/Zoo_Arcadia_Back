@@ -31,9 +31,9 @@ services:
             $mailer: '@App\Service\MailerService'
             
 
-    App\Controller\AdminController:
-        arguments:
-            $mailer: '@App\Service\MailerService'
+##    App\Controller\AdminController:
+  ##      arguments:
+    ##        $mailer: '@App\Service\MailerService'
     App\Service\UserService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'

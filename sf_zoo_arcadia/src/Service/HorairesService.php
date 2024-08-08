@@ -2,72 +2,40 @@
 
 namespace App\Service;
 
-use App\Entity\InfoService;
-use App\Entity\Admin;
 use App\Entity\Horaires;
+use App\Repository\HorairesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class HorairesService
 {
     private $entityManager;
+    private $horairesRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, HorairesRepository $horairesRepository)
     {
         $this->entityManager = $entityManager;
+        $this->horairesRepository = $horairesRepository;
     }
 
-    public function createHoraire(string $jour, array $heureOuverture, array $heureFermeture, ?InfoService $infoService, ?Admin $admin): Horaires
+    public function save(Horaires $horaires): void
     {
-        $horaire = new Horaires();
-        $horaire->setJour($jour);
-        $horaire->setHeureOuverture($heureOuverture);
-        $horaire->setHeureFermeture($heureFermeture);
-        $horaire->setCreatedAt(new \DateTimeImmutable());
-
-        if ($infoService) {
-            $horaire->setInfoService($infoService);
-        }
-
-        if ($admin) {
-            $horaire->setAdmin($admin);
-        }
-
-        $this->entityManager->persist($horaire);
-        $this->entityManager->flush();
-
-        return $horaire;
-    }
-
-    public function updateHoraire(Horaires $horaire, array $newData): void
-    {
-        if (isset($newData['jour'])) {
-            $horaire->setJour($newData['jour']);
-        }
-
-        if (isset($newData['heureOuverture'])) {
-            $horaire->setHeureOuverture($newData['heureOuverture']);
-        }
-
-        if (isset($newData['heureFermeture'])) {
-            $horaire->setHeureFermeture($newData['heureFermeture']);
-        }
-
-        if (isset($newData['infoService'])) {
-            $horaire->setInfoService($newData['infoService']);
-        }
-
-        if (isset($newData['admin'])) {
-            $horaire->setAdmin($newData['admin']);
-        }
-
-        $horaire->setUpdatedAt(new \DateTimeImmutable());
-
+        $this->entityManager->persist($horaires);
         $this->entityManager->flush();
     }
 
-    public function deleteHoraire(Horaires $horaire): void
+    public function update(Horaires $horaires): void
     {
-        $this->entityManager->remove($horaire);
         $this->entityManager->flush();
+    }
+
+    public function delete(Horaires $horaires): void
+    {
+        $this->entityManager->remove($horaires);
+        $this->entityManager->flush();
+    }
+
+    public function findAll(): array
+    {
+        return $this->horairesRepository->findAll();
     }
 }

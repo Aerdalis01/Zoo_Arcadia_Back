@@ -25,6 +25,7 @@ class Races
     {
         $this->nom = $nom;
         $this->animaux = new ArrayCollection();
+        error_log('Races::__construct - nom: ' . $nom);
     }
 
 

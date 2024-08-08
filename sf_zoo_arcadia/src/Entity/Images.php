@@ -25,7 +25,7 @@ class Images
     #[ORM\ManyToOne(inversedBy: 'images')]
     private ?Services $services = null;
 
-    #[ORM\ManyToOne(inversedBy: 'image')]
+    #[ORM\ManyToOne(inversedBy: 'images')]
     private ?SousService $sousService = null;
 
     #[ORM\ManyToOne(inversedBy: 'images')]

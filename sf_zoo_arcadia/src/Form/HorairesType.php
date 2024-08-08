@@ -3,39 +3,32 @@
 namespace App\Form;
 
 use App\Entity\Horaires;
-use App\Entity\InfoService;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HoraireType extends AbstractType
+class HorairesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('jour', ChoiceType::class, [
-                'choices' => [
-                    'Lundi' => 'Lundi',
-                    'Mardi' => 'Mardi',
-                    'Mercredi' => 'Mercredi',
-                    'Jeudi' => 'Jeudi',
-                    'Vendredi' => 'Vendredi',
-                    'Samedi' => 'Samedi',
-                    'Dimanche' => 'Dimanche',
-                ],
+            ->add('jour', TextType::class, [
+                'label' => 'Jour',
             ])
-            ->add('heureOuverture', TextType::class, [
-                'mapped' => false, // This field is not directly mapped to the Horaires entity
+            ->add('heureOuvertureZoo', DateTimeType::class, [
+                'label' => 'Heure d\'ouverture du zoo',
+                'widget' => 'single_text',
+                'required' => false,
             ])
-            ->add('heureFermeture', TextType::class, [
-                'mapped' => false, // This field is not directly mapped to the Horaires entity
+            ->add('heureFermetureZoo', DateTimeType::class, [
+                'label' => 'Heure de fermeture du zoo',
+                'widget' => 'single_text',
+                'required' => false,
             ])
-            ->add('infoService', EntityType::class, [
-                'class' => InfoService::class,
-                'choice_label' => 'name',
+            ->add('horairesServices', TextType::class, [
+                'label' => 'Horaires des services',
                 'required' => false,
             ]);
     }

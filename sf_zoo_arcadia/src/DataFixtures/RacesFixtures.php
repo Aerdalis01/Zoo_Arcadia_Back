@@ -17,10 +17,18 @@ class RacesFixtures extends Fixture implements FixtureGroupInterface
         ];
 
         foreach ($racesData as $raceNom => $reference) {
+
+            $existanteRace = $manager->getRepository(Races::class)->findOneBy(['nom' => $raceNom]);
+            if ($existanteRace) {
+
+                $this->addReference($reference, $existanteRace);
+            } else {
+
             $race = new Races($raceNom);
             $manager->persist($race);
             $this->addReference($reference, $race);
         }
+    }
 
         $manager->flush();
     }

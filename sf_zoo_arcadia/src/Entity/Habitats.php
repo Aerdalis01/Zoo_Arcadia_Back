@@ -69,7 +69,7 @@ class Habitats
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
+        error_log('Habitats::setNom - nom: ' . $nom);
         return $this;
     }
 
@@ -155,7 +155,6 @@ class Habitats
     public function removeAnimaux(Animaux $animaux): static
     {
         if ($this->animaux->removeElement($animaux)) {
-            // set the owning side to null (unless already changed)
             if ($animaux->getHabitats() === $this) {
                 $animaux->setHabitats(null);
             }
@@ -185,7 +184,6 @@ class Habitats
     public function removeImage(Images $image): static
     {
         if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
             if ($image->getHabitats() === $this) {
                 $image->setHabitats(null);
             }
@@ -215,7 +213,6 @@ class Habitats
     public function removeCommentairesHabitat(CommentairesHabitat $commentairesHabitat): static
     {
         if ($this->commentairesHabitats->removeElement($commentairesHabitat)) {
-            // set the owning side to null (unless already changed)
             if ($commentairesHabitat->getHabitat() === $this) {
                 $commentairesHabitat->setHabitat(null);
             }

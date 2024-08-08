@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
 #[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'role', type: 'string')]
+#[ORM\DiscriminatorColumn(name: 'Type_Services', type: 'string')]
 #[ORM\DiscriminatorMap(['services' => Services::class, 'restauration' => Restauration::class, 'visite_guidee' => VisiteGuidee::class, 'petit_train' => PetitTrain::class, 'info_service' => InfoService::class])]
 
 abstract class Services
@@ -28,7 +28,7 @@ abstract class Services
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services', cascade: ['persist', 'remove'], orphanRemoval:true)]
     private Collection $images;
 
     #[ORM\Column]

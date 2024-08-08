@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Admin;
 use App\Entity\Habitats;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -14,13 +15,14 @@ class HabitatsService
         $this->entityManager = $entityManager;
     }
 
-    public function createHabitat(string $nom, string $description, $zooArcadia): Habitats
+    public function createHabitat(string $nom, string $description, $zooArcadia,Admin $admin): Habitats
     {
         $habitat = new Habitats();
         $habitat->setNom($nom);
         $habitat->setDescription($description);
         $habitat->setCreatedAt(new \DateTimeImmutable());
         $habitat->setZooArcadia($zooArcadia);
+        $habitat->setAdmin($admin);
 
         $this->entityManager->persist($habitat);
         $this->entityManager->flush();

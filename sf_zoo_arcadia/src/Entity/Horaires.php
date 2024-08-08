@@ -17,12 +17,14 @@ class Horaires
     #[ORM\Column(length: 25)]
     private ?string $jour = null;
 
-    #[ORM\Column(type: Types::JSON)]
-    private array $heureOuverture = [];
+    #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $heureOuvertureZoo = null;
 
-    #[ORM\Column(type: Types::JSON)]
-    private array $heureFermeture = [];
+    #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $heureFermetureZoo = null;
 
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private array $horairesServices = [];
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -53,26 +55,26 @@ class Horaires
         return $this;
     }
 
-    public function getHeureOuverture(): array
+    public function getHeureOuvertureZoo(): ?\DateTimeImmutable
     {
-        return $this->heureOuverture;
+        return $this->heureOuvertureZoo;
     }
 
-    public function setHeureOuverture(array $heureOuverture): static
+    public function setHeureOuvertureZoo(?\DateTimeImmutable $heureOuvertureZoo): static
     {
-        $this->heureOuverture = $heureOuverture;
+        $this->heureOuvertureZoo = $heureOuvertureZoo;
 
         return $this;
     }
 
-    public function getHeureFermeture(): array
+    public function getHeureFermetureZoo(): ?\DateTimeImmutable
     {
-        return $this->heureFermeture;
+        return $this->heureFermetureZoo;
     }
 
-    public function setHeureFermeture(array $heureFermeture): static
+    public function setHeureFermetureZoo(?\DateTimeImmutable $heureFermetureZoo): static
     {
-        $this->heureFermeture = $heureFermeture;
+        $this->heureFermetureZoo = $heureFermetureZoo;
 
         return $this;
     }
@@ -98,6 +100,18 @@ class Horaires
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getHorairesServices(): array
+    {
+        return $this->horairesServices;
+    }
+
+    public function setHorairesServices(array $horairesServices): static
+    {
+        $this->horairesServices = $horairesServices;
 
         return $this;
     }

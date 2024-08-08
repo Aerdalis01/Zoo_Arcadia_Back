@@ -52,7 +52,6 @@ class Admin extends User
     public function removeHabitat(habitats $habitat): static
     {
         if ($this->habitats->removeElement($habitat)) {
-            // set the owning side to null (unless already changed)
             if ($habitat->getAdmin() === $this) {
                 $habitat->setAdmin(null);
             }
@@ -82,7 +81,6 @@ class Admin extends User
     public function removeService(Services $service): static
     {
         if ($this->services->removeElement($service)) {
-            // set the owning side to null (unless already changed)
             if ($service->getAdmin() === $this) {
                 $service->setAdmin(null);
             }
@@ -112,7 +110,6 @@ class Admin extends User
     public function removeAnimaux(Animaux $animaux): static
     {
         if ($this->animaux->removeElement($animaux)) {
-            // set the owning side to null (unless already changed)
             if ($animaux->getAdmin() === $this) {
                 $animaux->setAdmin(null);
             }
@@ -142,7 +139,6 @@ class Admin extends User
     public function removeHoraire(Horaires $horaire): static
     {
         if ($this->horaires->removeElement($horaire)) {
-            // set the owning side to null (unless already changed)
             if ($horaire->getAdmin() === $this) {
                 $horaire->setAdmin(null);
             }

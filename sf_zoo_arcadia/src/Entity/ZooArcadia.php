@@ -69,7 +69,7 @@ class ZooArcadia
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
+        error_log('Habitats::setNom - nom: ' . $nom);
         return $this;
     }
 

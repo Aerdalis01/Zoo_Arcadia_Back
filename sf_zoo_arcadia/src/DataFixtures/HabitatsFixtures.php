@@ -24,7 +24,7 @@ class HabitatsFixtures extends Fixture implements DependentFixtureInterface, Fix
         $habitat1->setDescription('Large open area with grasslands.');
         $habitat1->setCreatedAt(new \DateTimeImmutable());
         $habitat1->setZooArcadia($zoo);
-        $habitat1->addImage($image1); // Associer l'image au habitat
+        $habitat1->addImage($image1); 
         $manager->persist($habitat1);
 
         $habitat2 = new Habitats();
