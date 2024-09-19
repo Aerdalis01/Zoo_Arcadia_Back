@@ -2,27 +2,33 @@
 
 namespace App\Service;
 
-use App\Entity\Admin;
+
 use App\Entity\Habitats;
 use Doctrine\ORM\EntityManagerInterface;
 
 class HabitatsService
 {
     private EntityManagerInterface $entityManager;
+    private ImageManager $imageManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ImageManager $imageManager)
     {
         $this->entityManager = $entityManager;
+        $this->imageManager = $imageManager;
     }
 
-    public function createHabitat(string $nom, string $description, $zooArcadia,Admin $admin): Habitats
+    public function createHabitat(string $nom, string $description, ?string $nomImage , ?string $imagePath, ?string $imageSubDirectory ): Habitats
     {
         $habitat = new Habitats();
         $habitat->setNom($nom);
         $habitat->setDescription($description);
         $habitat->setCreatedAt(new \DateTimeImmutable());
-        $habitat->setZooArcadia($zooArcadia);
-        $habitat->setAdmin($admin);
+
+        $image = $this->imageManager->manageImage($habitat, $nomImage, $imagePath, $imageSubDirectory);
+        if ($image) {
+            $habitat->setImage($image);
+            $this->entityManager->persist($image);
+        }
 
         $this->entityManager->persist($habitat);
         $this->entityManager->flush();
@@ -30,16 +36,17 @@ class HabitatsService
         return $habitat;
     }
 
-    public function updateHabitat(Habitats $habitat, array $data): Habitats
+    public function updateHabitat(Habitats $habitat, string $nom, string $description, ?string $nomImage , ?string $imagePath, ?string $imageSubDirectory ): Habitats
     {
-        if (isset($data['nom'])) {
-            $habitat->setNom($data['nom']);
+        $habitat->setNom($nom);
+        $habitat->setDescription($description);
+    
+        $image = $this->imageManager->manageImage($habitat, $nomImage, $imagePath, $imageSubDirectory);
+        if ($image) {
+            $habitat->setImage($image);
+            $this->entityManager->persist($image);
         }
-        if (isset($data['description'])) {
-            $habitat->setDescription($data['description']);
-        }
-        $habitat->setUpdatedAt(new \DateTimeImmutable());
-
+    
         $this->entityManager->flush();
 
         return $habitat;
@@ -50,4 +57,5 @@ class HabitatsService
         $this->entityManager->remove($habitat);
         $this->entityManager->flush();
     }
+    
 }

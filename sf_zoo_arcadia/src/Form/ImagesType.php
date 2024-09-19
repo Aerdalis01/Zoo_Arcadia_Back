@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Images;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,8 +17,10 @@ class ImagesType extends AbstractType
             ->add('nom', TextType::class, [
                 'label' => 'Nom de l\'image'
             ])
-            ->add('imagePath', TextType::class, [
-                'label' => 'Chemin de l\'image'
+            ->add('imagePath', FileType::class, [
+                'label' => 'Fichier image',
+                'required' => true,
+                'mapped' => false,
             ])
             ->add('imageSubDirectory', TextType::class, [
                 'label' => 'Sous-répertoire de l\'image',

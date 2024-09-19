@@ -8,7 +8,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
+
+
+#[Route('/api/contact', name: '_app_api_contact_')]
 class ContactController extends AbstractController
 {
     private $mailer;
@@ -19,28 +23,36 @@ class ContactController extends AbstractController
         $this->mailer = $mailer;
         $this->entityManager = $entityManager;
     }
-
+    #[Route('/new', name: 'new', methods: ['POST'])]
     public function contactForm(Request $request): Response
     {
-        if ($request->isMethod('POST')) {
-            $visiteurEmail = $request->request->get('email');
-            $titre = $request->request->get('titre');
-            $commentaire = $request->request->get('commentaire');
+        // Décoder les données JSON de la requête
+        $data = json_decode($request->getContent(), true);
 
-            $contact = new Contact();
-            $contact->setEmail($visiteurEmail);
-            $contact->setTitre($titre);
-            $contact->setCommentaire($commentaire);
-
-            $this->entityManager->persist($contact);
-            $this->entityManager->flush();
-
-            // Envoyer l'email de contact
-            $this->mailer->sendContactMessage($visiteurEmail, $titre, $commentaire);
-
-            return new Response('Message envoyé avec succès.');
+        if (!$data) {
+            return $this->json(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->render('contact/form.html.twig');
+        // Vérifier que les champs requis sont présents
+        if (!isset($data['email'], $data['titre'], $data['commentaire'])) {
+            return $this->json(['error' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Créer un nouvel objet Contact et remplir ses propriétés
+        $contact = new Contact();
+        $contact->setEmail($data['email']);
+        $contact->setTitre($data['titre']);
+        $contact->setCommentaire($data['commentaire']);
+
+        // Persister le contact en base de données
+        $this->entityManager->persist($contact);
+        $this->entityManager->flush();
+
+        // Envoyer l'email de contact
+        $this->mailer->sendContactMessage($data['email'], $data['titre'], $data['commentaire']);
+
+        // Retourner une réponse de succès
+        return $this->json(['message' => 'Contact created and email sent successfully'], Response::HTTP_CREATED);
     }
 }
+

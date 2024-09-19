@@ -12,6 +12,9 @@ services:
         bind:
             $passwordHasher: '@security.password_hasher'
     
+    App\Controller\:
+        resource: '../src/controller'
+        tags: ['controller.service_arguments']
 
     App\:
         resource: '../src/'
@@ -30,14 +33,33 @@ services:
         arguments:
             $mailer: '@App\Service\MailerService'
             
-
-##    App\Controller\AdminController:
-  ##      arguments:
-    ##        $mailer: '@App\Service\MailerService'
+    
+    
     App\Service\UserService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
             $passwordHasher: '@security.password_hasher'
+
     App\Service\AnimauxService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
+
+    App\Service\AdminInitializer:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $passwordHasher: '@security.password_hasher'
+            $adminEmail: '%env(ADMIN_EMAIL)%'
+            $adminPassword: '%env(ADMIN_PASSWORD)%'
+        public: false
+
+    App\Command\InitializeAdminCommand:
+            arguments:
+                $adminInitializer: '@App\Service\AdminInitializer'
+            tags:
+                - { name: 'console.command' }
+    App\Service\ImageManager:
+        arguments:
+            $imageDirectory: '%images_directory%'
+    # App\EventListener\CorsListener:
+    #     tags:
+    #         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }

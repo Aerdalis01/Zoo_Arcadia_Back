@@ -7,6 +7,7 @@ use App\Repository\ContactRepository;
 use App\Repository\ServicesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\MailerService;
+use Psr\Log\LoggerInterface;
 
 class EmployeService
 {
@@ -15,19 +16,23 @@ class EmployeService
     private $contactRepository;
     private $serviceRepository;
     private $mailerService;
+    private $logger;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
         AvisRepository $avisRepository,
         ContactRepository $contactRepository,
         ServicesRepository $serviceRepository,
-        MailerService $mailerService
-    ) {
+        MailerService $mailerService,
+        LoggerInterface $logger
+        ) {
         $this->entityManager = $entityManager;
         $this->avisRepository = $avisRepository;
         $this->contactRepository = $contactRepository;
         $this->serviceRepository = $serviceRepository;
         $this->mailerService = $mailerService;
+        $this->logger = $logger;
     }
 
     public function validerAvis($avisId)
@@ -36,8 +41,12 @@ class EmployeService
         if ($avis) {
             $avis->setValide(true);
             $this->entityManager->flush();
+            $this->logger->info("Avis $avisId validé par l'employé.");
+        } else {
+            $this->logger->warning("Tentative de validation d'un avis non trouvé : $avisId.");
         }
-    }
+      }
+
     public function invaliderAvis($avisId)
     {
         $avis = $this->avisRepository->find($avisId);
@@ -56,11 +65,20 @@ class EmployeService
     }
 
     public function mettreAJourService($serviceId, $data)
-    {
-        $service = $this->serviceRepository->find($serviceId);
-        if ($service) {
-            // Mise à jour du service avec les nouvelles données
-            $this->entityManager->flush();
+{
+    $service = $this->serviceRepository->find($serviceId);
+    if ($service) {
+        if (isset($data['nomService'])) {
+            $service->setNomService($data['nomService']);
         }
+        if (isset($data['titreService'])) {
+            $service->setTitreService($data['titreService']);
+        }
+        if (isset($data['description'])) {
+            $service->setDescription($data['description']);
+        }
+
+        $this->entityManager->flush();
     }
+  }
 }

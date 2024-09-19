@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HorairesRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Horaires
 {
     #[ORM\Id]
@@ -14,7 +15,7 @@ class Horaires
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 25)]
+    #[ORM\Column(length: 25, nullable: true)]
     private ?string $jour = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
@@ -26,17 +27,17 @@ class Horaires
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $horairesServices = [];
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, type: 'datetime_immutable')]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'horaires')]
     private ?InfoService $infoService = null;
 
-    #[ORM\ManyToOne(inversedBy: 'horaires')]
-    private ?Admin $admin = null;
+    #[ORM\Column(length: 25, nullable: true)]
+    private ?string $titreHoraire = null;
 
     public function getId(): ?int
     {
@@ -128,15 +129,29 @@ class Horaires
         return $this;
     }
 
-    public function getAdmin(): ?Admin
+
+    public function getTitreHoraire(): ?string
     {
-        return $this->admin;
+        return $this->titreHoraire;
     }
 
-    public function setAdmin(?Admin $admin): static
+    public function setTitreHoraire(?string $titreHoraire): static
     {
-        $this->admin = $admin;
+        $this->titreHoraire = $titreHoraire;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 }

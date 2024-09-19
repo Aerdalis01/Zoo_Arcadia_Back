@@ -11,29 +11,34 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HorairesType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('jour', TextType::class, [
                 'label' => 'Jour',
+                'required' => false
             ])
             ->add('heureOuvertureZoo', DateTimeType::class, [
-                'label' => 'Heure d\'ouverture du zoo',
+                'label' => 'Heure d\'ouverture',
                 'widget' => 'single_text',
                 'required' => false,
             ])
             ->add('heureFermetureZoo', DateTimeType::class, [
-                'label' => 'Heure de fermeture du zoo',
+                'label' => 'Heure de fermeture',
                 'widget' => 'single_text',
                 'required' => false,
             ])
             ->add('horairesServices', TextType::class, [
                 'label' => 'Horaires des services',
                 'required' => false,
+            ])
+            ->add('titreHoraire', TextType::class, [
+                'label' => 'Titre de l\'horaire',
+                'required' => false,
             ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Horaires::class,

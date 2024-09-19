@@ -6,6 +6,7 @@ use App\Repository\AnimauxRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnimauxRepository::class)]
 class Animaux
@@ -13,8 +14,9 @@ class Animaux
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('animaux_basic')]
     private ?int $id = null;
-
+    #[Groups('animaux_basic')]
     #[ORM\Column(length: 25)]
     private ?string $prenom = null;
 
@@ -37,12 +39,6 @@ class Animaux
 
     #[ORM\ManyToOne(inversedBy: 'animaux')]
     private ?Races $race = null;
-
-    #[ORM\ManyToOne(inversedBy: 'animaux')]
-    private ?Admin $admin = null;
-
-    #[ORM\ManyToOne(inversedBy: 'animaux')]
-    private ?ZooArcadia $zooArcadia = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Images $image = null;
@@ -183,30 +179,6 @@ class Animaux
         return $this;
     }
 
-    public function getAdmin(): ?Admin
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?Admin $admin): static
-    {
-        $this->admin = $admin;
-
-        return $this;
-    }
-
-    public function getZooArcadia(): ?ZooArcadia
-    {
-        return $this->zooArcadia;
-    }
-
-    public function setZooArcadia(?ZooArcadia $zooArcadia): static
-    {
-        $this->zooArcadia = $zooArcadia;
-
-        return $this;
-    }
-
     public function getImage(): ?Images
     {
         return $this->image;
@@ -240,7 +212,6 @@ class Animaux
     public function removeCompteRenduVet(CompteRenduVet $compteRenduVet): static
     {
         if ($this->compteRenduVet->removeElement($compteRenduVet)) {
-            // set the owning side to null (unless already changed)
             if ($compteRenduVet->getAnimaux() === $this) {
                 $compteRenduVet->setAnimaux(null);
             }

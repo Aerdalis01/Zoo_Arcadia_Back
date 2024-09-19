@@ -23,8 +23,8 @@ class RapportAlimentation
     #[ORM\Column(length: 255)]
     private ?string $nourriture = null;
 
-    #[ORM\Column]
-    private ?float $quantite = null;
+    #[ORM\Column(length: 255)]
+    private ?string $quantite = null;
 
 
     #[ORM\ManyToOne(inversedBy: 'rapportAlimentations')]
@@ -81,12 +81,12 @@ class RapportAlimentation
         return $this;
     }
 
-    public function getQuantite(): ?float
+    public function getQuantite(): ?string
     {
         return $this->quantite;
     }
 
-    public function setQuantite(float $quantite): static
+    public function setQuantite(string $quantite): static
     {
         $this->quantite = $quantite;
 

@@ -19,31 +19,16 @@ class AnimauxType extends AbstractType
     {
         $builder
             ->add('prenom', TextType::class)
-            ->add('createdAt',  DateTimeType::class)
             ->add('race', EntityType::class, [
                 'class' => Races::class,
                 'choice_label' => 'nom',
                 'required' => true,
             ])
-            ->add('imagePath', TextType::class, [
-                'label' => 'Image (WEBP file)',
-                'mapped' => false, 
-                'required' => false,
-            ])
-            ->add('imageSubDirectory', TextType::class, [
-                'mapped' => false, 
-                'required' => false,
-            ])
-            ->add('habitat', EntityType::class, [
-                'class' => Habitats::class,
-                'choice_label' => 'nom',
-                'required' => false,
-            ])
-            ->add('zoo_arcadia', EntityType::class, [
-                'class' => ZooArcadia::class,
-                'choice_label' => 'nom',
+            ->add('image', ImagesType::class, [
+                'label' => 'Informations sur l\'image',
                 'required' => false,
             ]);
+            
     }
 
     public function configureOptions(OptionsResolver $resolver)

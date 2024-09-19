@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\AvisRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: AvisRepository::class)]
 class Avis
@@ -12,27 +14,32 @@ class Avis
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    
+    #[Groups("avis_basic")]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups("avis_basic")]
     private ?string $pseudo = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups("avis_basic")]
     private ?string $commentaireAvis = null;
 
     #[ORM\Column]
+    #[Groups("avis_basic")]
     private ?int $note = null;
 
     #[ORM\Column]
+    #[Groups("avis_basic")]
     private ?bool $valide = false;
 
     #[ORM\ManyToOne(inversedBy: 'avis')]
-    private ?ZooArcadia $ZooArcadia = null;
-
-    #[ORM\ManyToOne(inversedBy: 'avis')]
+    #[Groups("avis_detail")]
     private ?Employe $employe = null;
 
     #[ORM\Column]
+    #[Groups("avis_basic")]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
@@ -88,17 +95,6 @@ class Avis
         return $this;
     }
 
-    public function getZooArcadia(): ?ZooArcadia
-    {
-        return $this->ZooArcadia;
-    }
-
-    public function setZooArcadia(?ZooArcadia $ZooArcadia): static
-    {
-        $this->ZooArcadia = $ZooArcadia;
-
-        return $this;
-    }
 
     public function getEmploye(): ?employe
     {

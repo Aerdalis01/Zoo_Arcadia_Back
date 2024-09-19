@@ -23,11 +23,7 @@ class HabitatsType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description de l\'habitat'
             ])
-            ->add('zooArcadia', EntityType::class, [
-                'class' => ZooArcadia::class,
-                'choice_label' => 'nom',
-                'label' => 'Zoo Arcadia'
-            ])
+            
             ->add('images', EntityType::class, [
                 'class' => Images::class,
                 'choice_label' => 'nom',
@@ -35,7 +31,7 @@ class HabitatsType extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'required' => false,
-          ]);
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

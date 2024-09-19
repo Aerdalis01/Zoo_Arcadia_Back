@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ImagesRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: ImagesRepository::class)]
 class Images
@@ -11,27 +13,38 @@ class Images
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+
+    #[Groups("images_basic")]
     private ?int $id = null;
 
     #[ORM\Column(length: 64)]
+    #[Groups("images_basic")]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Groups("images_basic")]
     private ?string $imagePath = null;
 
     #[ORM\Column]
+    #[Groups("images_basic")]
     private ?string $imageSubDirectory = null;
 
     #[ORM\ManyToOne(inversedBy: 'images')]
+    #[Ignore]
     private ?Services $services = null;
 
-    #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\ManyToOne(targetEntity: SousService::class, inversedBy: 'images')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[Ignore]
     private ?SousService $sousService = null;
 
-    #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\ManyToOne(targetEntity: Habitats::class ,inversedBy: 'images')]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Ignore]
     private ?Habitats $habitats = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Ignore]
     private ?Animaux $animal = null;
 
 

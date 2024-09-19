@@ -38,7 +38,7 @@ class AnimauxFixtures extends Fixture implements DependentFixtureInterface, Fixt
                 'imagePath' => 'uploads/images/animals/aerdalis01-photrealistic-a-white-cerf-selfie-386cd011-80ef-44a9-8ca4-4be08c9ca9ba-fotor-2024052112256-66a105106d5b7.webp',
                 'imageSubDirectory' => 'animals',
                 'habitat' => $habitat1,
-                'zooArcadia' => $zooArcadia,
+                
             ],
             [
                 'prenom' => 'Basile l\'éléphant',
@@ -47,7 +47,7 @@ class AnimauxFixtures extends Fixture implements DependentFixtureInterface, Fixt
                 'imagePath' => 'public/uploads/images/animals/elephant-66a1066c99a48.webp',
                 'imageSubDirectory' => 'animals',
                 'habitat' => $habitat2,
-                'zooArcadia' => $zooArcadia,
+                
             ],
         ];
 
@@ -66,9 +66,10 @@ class AnimauxFixtures extends Fixture implements DependentFixtureInterface, Fixt
             $animal->setRace($animalData['race']);
             $animal->setImage($image);
             $animal->setHabitats($animalData['habitat']);
-            $animal->setZooArcadia($animalData['zooArcadia']);
 
             $manager->persist($animal);
+
+            $this->setReference($animalData['prenom'], $animal);
         }
 
         $manager->flush();

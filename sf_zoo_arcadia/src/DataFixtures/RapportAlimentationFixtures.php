@@ -11,8 +11,8 @@ class RapportAlimentationFixtures extends Fixture implements DependentFixtureInt
 {
     public function load(ObjectManager $manager): void
     {
-        $employe = $this->getReference('employe_reference'); 
-        $animal = $this->getReference('animal_reference'); 
+        $employe = $this->getReference('employe1');
+        $animal = $this->getReference('René le cerf'); 
 
         $rapport1 = new RapportAlimentation();
         $rapport1->setDate(new \DateTime('2024-08-01'));
@@ -25,6 +25,8 @@ class RapportAlimentationFixtures extends Fixture implements DependentFixtureInt
 
         $manager->persist($rapport1);
 
+        $this->addReference("rapport_alimentation_1", $rapport1);
+
         $rapport2 = new RapportAlimentation();
         $rapport2->setDate(new \DateTime('2024-08-02'));
         $rapport2->setHeure(new \DateTime('08:00:00'));
@@ -35,6 +37,8 @@ class RapportAlimentationFixtures extends Fixture implements DependentFixtureInt
         $rapport2->setCreatedAt(new \DateTimeImmutable());
 
         $manager->persist($rapport2);
+
+        
 
         $manager->flush();
     }

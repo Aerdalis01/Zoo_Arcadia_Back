@@ -4,23 +4,37 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Form\ImagesType;
+use App\Repository\ImagesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/images')]
+
+#[Route('/api/admin/images', name: '_api_app_admin_images_')]
 class ImagesController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
+    private Serializer $serializer;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $this->serializer = new Serializer($normalizers, $encoders,);
+
     }
 
-    #[Route('/', name: 'images_index', methods: ['GET'])]
+    #[Route('/', name: 'index', methods: ['GET'])]
     public function index(): Response
     {
         $images = $this->entityManager->getRepository(Images::class)->findAll();
@@ -28,35 +42,37 @@ class ImagesController extends AbstractController
         return $this->json($images);
     }
 
-    #[Route('/new', name: 'images_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    public function show(int $id, ImagesRepository $imagesRepository): Response
     {
-        $image = new Images();
-        $form = $this->createForm(ImagesType::class, $image);
-        $form->handleRequest($request);
+        $image = $imagesRepository->find($id);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($image);
-            $this->entityManager->flush();
-
-            return $this->redirectToRoute('images_index');
+        if (!$image) {
+            return $this->json(['error' => 'Image not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->render('images/new.html.twig', [
-            'image' => $image,
-            'form' => $form->createView(),
-        ]);
+        return $this->json($image, Response::HTTP_OK);
     }
 
-    #[Route('/{id}', name: 'images_show', methods: ['GET'])]
-    public function show(Images $image): Response
+    #[Route('/new', name: 'add_image_json', methods: ['POST'])]
+    public function addImageJson(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
     {
-        return $this->render('images/show.html.twig', [
-            'image' => $image,
-        ]);
+        $data = $request->getContent();
+        try {
+            $image = $serializer->deserialize($data, Images::class, 'json', ['groups' => 'images_basic']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Désérialisation échouée', 'details' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $entityManager->persist($image);
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Image ajoutée avec succès'], JsonResponse::HTTP_CREATED);
     }
 
-    #[Route('/{id}/edit', name: 'images_edit', methods: ['GET', 'POST'])]
+
+
+    #[Route('/{id}', name: 'edit', methods: ['PUT'])]
     public function edit(Request $request, Images $image): Response
     {
         $form = $this->createForm(ImagesType::class, $image);
@@ -74,14 +90,17 @@ class ImagesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'images_delete', methods: ['POST'])]
-    public function delete(Request $request, Images $image): Response
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(int $id, ImagesRepository $imagesRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$image->getId(), $request->request->get('_token'))) {
-            $this->entityManager->remove($image);
-            $this->entityManager->flush();
+        $image = $imagesRepository->find($id);
+        
+        if (!$image) {
+            return $this->json(['error' => 'Image not found'], Response::HTTP_NOT_FOUND);
         }
+        $this->entityManager->remove($image);
+        $this->entityManager->flush();
 
-        return $this->redirectToRoute('images_index');
+        return $this->json(['message' => 'Image supprimée avec succès'], Response::HTTP_OK);
     }
 }

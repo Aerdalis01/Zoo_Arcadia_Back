@@ -3,11 +3,13 @@
 namespace App\Form;
 
 use App\Entity\CarouselSlide;
+use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class CarouselSlideType extends AbstractType
 {
@@ -17,7 +19,13 @@ class CarouselSlideType extends AbstractType
             ->add('imageLarge', TextType::class)
             ->add('imageMedium', TextType::class)
             ->add('imageSmall', TextType::class)
-            ->add('description', TextareaType::class);
+            ->add('description', TextareaType::class)
+            ->add('createdAt', DateTimeType::class, [
+                'widget' => 'single_text',
+                'label' => 'Created At',
+                'required' => false, 
+                'disabled' => true,
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

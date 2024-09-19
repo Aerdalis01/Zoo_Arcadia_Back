@@ -22,12 +22,17 @@ class Contact
     #[ORM\Column(length: 255)]
     private ?string $commentaire = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
     private ?\DateTimeImmutable $sendAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'contacts')]
     private ?Employe $employe = null;
 
+    public function __construct()
+    {
+        
+        $this->sendAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

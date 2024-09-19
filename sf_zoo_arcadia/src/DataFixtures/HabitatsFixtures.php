@@ -23,24 +23,21 @@ class HabitatsFixtures extends Fixture implements DependentFixtureInterface, Fix
         $habitat1->setNom('Marais');
         $habitat1->setDescription('Large open area with grasslands.');
         $habitat1->setCreatedAt(new \DateTimeImmutable());
-        $habitat1->setZooArcadia($zoo);
-        $habitat1->addImage($image1); 
+        $habitat1->setImage($image1); 
         $manager->persist($habitat1);
 
         $habitat2 = new Habitats();
         $habitat2->setNom('Savane');
         $habitat2->setDescription('Dense forest with high humidity.');
         $habitat2->setCreatedAt(new \DateTimeImmutable());
-        $habitat2->setZooArcadia($zoo);
-        $habitat2->addImage($image2);
+        $habitat2->setImage($image2);
         $manager->persist($habitat2);
         
         $habitat3 = new Habitats();
         $habitat3->setNom('Jungle');
         $habitat3->setDescription('Dense forest with high humidity.');
         $habitat3->setCreatedAt(new \DateTimeImmutable());
-        $habitat3->setZooArcadia($zoo);
-        $habitat3->addImage($image3);
+        $habitat3->setImage($image3);
         $manager->persist($habitat3);
 
         $manager->flush();

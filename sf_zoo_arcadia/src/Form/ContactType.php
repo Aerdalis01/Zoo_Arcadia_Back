@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ContactType extends AbstractType
 {
@@ -20,16 +21,30 @@ class ContactType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => 'Email',
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'L\'email est obligatoire']),
+                    new Assert\Email(['message' => 'Veuillez entrer un email valide']),
+                ],
             ])
             ->add('titre', TextType::class, [
                 'label' => 'Titre',
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'Le titre est obligatoire']),
+                    new Assert\Length([
+                        'min' => 5,
+                        'minMessage' => 'Le titre doit comporter au moins {{ limit }} caractères',
+                    ]),
+                ],
             ])
             ->add('commentaire', TextareaType::class, [
                 'label' => 'Commentaire',
-            ])
-            ->add('sendAt', DateTimeType::class, [
-                'widget' => 'single_text',
-                'label' => 'Envoyé le',
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'Le commentaire est obligatoire']),
+                    new Assert\Length([
+                        'min' => 10,
+                        'minMessage' => 'Le commentaire doit comporter au moins {{ limit }} caractères',
+                    ]),
+                ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Envoyer',

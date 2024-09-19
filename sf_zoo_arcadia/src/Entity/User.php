@@ -4,12 +4,15 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'role', type: 'string')]
 #[ORM\DiscriminatorMap(['user' => User::class, 'employe' => Employe::class, 'admin' => Admin::class, 'veterinaire' => Veterinaire::class])]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -31,6 +34,14 @@ class User
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
+
+    public function __construct()
+    {
+        $this->roles = ['ROLE_USER'];
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -96,6 +107,24 @@ class User
 
         return $this;
     }
+
+    public function getRoles(): array
+    {
+        
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        if (empty($roles)) {
+            $roles = ['ROLE_USER'];
+        }
+        $this->roles = $roles;
+        return $this;
+    }
     
     public function isEmploye(): bool
     {
@@ -110,5 +139,20 @@ class User
     public function isVeterinaire(): bool
     {
         return $this instanceof Veterinaire;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->username;
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function eraseCredentials(): void
+    {
+
     }
 }

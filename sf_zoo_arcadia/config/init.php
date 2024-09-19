@@ -5,11 +5,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Dotenv\Dotenv;
 
-require 'vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/.env', __DIR__.'/.env.local');
+$dotenv->load(__DIR__.'/../.env', __DIR__.'/../.env.local');
 
 
 $kernel = new App\Kernel('dev', true);
@@ -17,9 +17,9 @@ $kernel->boot();
 $container = $kernel->getContainer();
 
 /** @var EntityManagerInterface $entityManager */
-$entityManager = $container->get('doctrine.orm.entity_manager');
+$entityManager = $container->get(EntityManagerInterface::class);
 /** @var UserPasswordHasherInterface $passwordHasher */
-$passwordHasher = $container->get('security.password_hasher');
+$passwordHasher = $container->get(UserPasswordHasherInterface::class);
 
 $adminEmail = $_ENV['ADMIN_EMAIL'];
 $adminPassword = $_ENV['ADMIN_PASSWORD'];

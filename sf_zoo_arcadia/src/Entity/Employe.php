@@ -20,16 +20,15 @@ class Employe extends User
     #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'employe')]
     private Collection $contacts;
 
-    #[ORM\OneToMany(targetEntity: Services::class, mappedBy: 'employe')]
-    private Collection $services;
 
 
     public function __construct()
     {
+        parent::__construct();
+        $this->setRoles(['ROLE_EMPLOYE']);
         $this->rapportAlimentations = new ArrayCollection();
         $this->avis = new ArrayCollection();
         $this->contacts = new ArrayCollection();
-        $this->services = new ArrayCollection();
     }
 
     /**
@@ -146,36 +145,6 @@ class Employe extends User
         // Logique d'envoi d'email (peut utiliser SwiftMailer, Symfony Mailer, etc.)
         // Exemple simplifié :
         mail($email, 'Réponse à votre contact', $reponse);
-    }
-
-    /**
-     * @return Collection<int, Services>
-     */
-    public function getServices(): Collection
-    {
-        return $this->services;
-    }
-
-    public function addService(Services $service): static
-    {
-        if (!$this->services->contains($service)) {
-            $this->services->add($service);
-            $service->setEmploye($this);
-        }
-
-        return $this;
-    }
-
-    public function removeService(Services $service): static
-    {
-        if ($this->services->removeElement($service)) {
-            // set the owning side to null (unless already changed)
-            if ($service->getEmploye() === $this) {
-                $service->setEmploye(null);
-            }
-        }
-
-        return $this;
     }
 
 }

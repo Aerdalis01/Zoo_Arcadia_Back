@@ -3,39 +3,56 @@
 namespace App\Service;
 
 use App\Entity\Horaires;
-use App\Repository\HorairesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class HorairesService
 {
-    private $entityManager;
-    private $horairesRepository;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, HorairesRepository $horairesRepository)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->horairesRepository = $horairesRepository;
     }
 
-    public function save(Horaires $horaires): void
+    public function createHoraire(?string $jour, ?\DateTimeImmutable $heureOuvertureZoo, ?\DateTimeImmutable $heureFermetureZoo, array $horairesServices, ?string $titreHoraire): Horaires
     {
-        $this->entityManager->persist($horaires);
+        $horaire = new Horaires();
+        if ($jour !== null) {
+            $horaire->setJour($jour);
+        }
+        
+        if ($heureOuvertureZoo !== null) {
+            $horaire->setHeureOuvertureZoo($heureOuvertureZoo);
+        }
+    
+        if ($heureFermetureZoo !== null) {
+            $horaire->setHeureFermetureZoo($heureFermetureZoo);
+        }
+        $horaire->setHorairesServices($horairesServices);
+        $horaire->setTitreHoraire($titreHoraire);
+
+        $this->entityManager->persist($horaire);
         $this->entityManager->flush();
+
+        return $horaire;
     }
 
-    public function update(Horaires $horaires): void
+    public function updateHoraire(Horaires $horaire, string $jour, ?\DateTimeImmutable $heureOuvertureZoo, ?\DateTimeImmutable $heureFermetureZoo, array $horairesServices, ?string $titreHoraire): Horaires
     {
+        $horaire->setJour($jour);
+        $horaire->setHeureOuvertureZoo($heureOuvertureZoo);
+        $horaire->setHeureFermetureZoo($heureFermetureZoo);
+        $horaire->setHorairesServices($horairesServices);
+        $horaire->setTitreHoraire($titreHoraire);
+
         $this->entityManager->flush();
+
+        return $horaire;
     }
 
-    public function delete(Horaires $horaires): void
+    public function deleteHoraire(Horaires $horaire): void
     {
-        $this->entityManager->remove($horaires);
+        $this->entityManager->remove($horaire);
         $this->entityManager->flush();
-    }
-
-    public function findAll(): array
-    {
-        return $this->horairesRepository->findAll();
     }
 }

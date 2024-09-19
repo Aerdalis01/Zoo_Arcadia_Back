@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\CommentairesHabitat;
 use App\Entity\Veterinaire;
 use App\Entity\Habitats;
+use App\Entity\Animaux;
 use App\Entity\CompteRenduVet;
 use App\Repository\CompteRenduVetRepository;
 use App\Repository\HabitatsRepository;
@@ -30,15 +31,25 @@ class VeterinaireService
         $this->rapportAlimentationRepository = $rapportAlimentationRepository;
     }
 
+    
     public function remplirCompteRenduVet($data)
     {
+        
+        /** @var Animaux $animal */
+        $animal = $data['animaux'];
+        /** @var Veterinaire $veterinaire */
+        $veterinaire = $data['veterinaire'];
+
         $compteRendu = new CompteRenduVet();
         $compteRendu->setCommentaireEtat($data['commentaireEtat']);
         $compteRendu->setCreatedAt(new \DateTimeImmutable());
+        $compteRendu->setVeterinaire($veterinaire);
+        $compteRendu->setAnimaux($animal); // Associer le compte rendu à l'animal
 
         $this->entityManager->persist($compteRendu);
         $this->entityManager->flush();
     }
+
 
     public function ajouterCommentaire(Veterinaire $veterinaire, Habitats $habitat, string $contenu)
     {
@@ -54,6 +65,7 @@ class VeterinaireService
         return $commentaire;
     }
 
+    
     public function consulterRapportAlimentation($animalId)
     {
         return $this->rapportAlimentationRepository->findBy(['animal' => $animalId]);

@@ -30,12 +30,12 @@ class RapportAlimentationType extends AbstractType
             ->add('nourriture', TextType::class, [
                 'label' => 'Nourriture'
             ])
-            ->add('quantite', NumberType::class, [
+            ->add('quantite', TextType::class, [
                 'label' => 'Quantité'
             ])
             ->add('employe', EntityType::class, [
                 'class' => Employe::class,
-                'choice_label' => 'nom',
+                'choice_label' => 'username',
                 'label' => 'Employé'
             ])
             ->add('animal', EntityType::class, [
@@ -52,6 +52,7 @@ class RapportAlimentationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => RapportAlimentation::class,
+            'csrf_protection' => false,
         ]);
     }
 }

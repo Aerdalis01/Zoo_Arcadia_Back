@@ -6,6 +6,7 @@ use App\Repository\RacesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RacesRepository::class)]
 class Races
@@ -13,19 +14,21 @@ class Races
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('races_basic')]
     private ?int $id = null;
 
+    #[Groups('races_basic')]
     #[ORM\Column(length: 25)]
     private ?string $nom = null;
 
     #[ORM\OneToMany(targetEntity: Animaux::class, mappedBy: 'race')]
+    #[Groups('races_animaux')]
     private Collection $animaux;
 
     public function __construct(string $nom)
     {
         $this->nom = $nom;
         $this->animaux = new ArrayCollection();
-        error_log('Races::__construct - nom: ' . $nom);
     }
 
 

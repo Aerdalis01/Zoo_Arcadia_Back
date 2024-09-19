@@ -21,13 +21,11 @@ final class Version20240808092906 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE services CHANGE role Type_Services VARCHAR(255) NOT NULL');
-        $this->addSql('ALTER TABLE sous_service CHANGE role Type_Sou_Services VARCHAR(255) NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE services CHANGE Type_Services role VARCHAR(255) NOT NULL');
-        $this->addSql('ALTER TABLE sous_service CHANGE Type_Sou_Services role VARCHAR(255) NOT NULL');
     }
 }

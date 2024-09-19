@@ -18,12 +18,13 @@ class Carousel
     #[ORM\OneToMany(targetEntity: CarouselSlide::class, mappedBy: 'carousel', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $carouselSlides;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?ZooArcadia $zooArcadia = null;
-
-
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    
 
     public function __construct()
     {
@@ -64,18 +65,6 @@ class Carousel
         return $this;
     }
 
-    public function getZooArcadia(): ?ZooArcadia
-    {
-        return $this->zooArcadia;
-    }
-
-    public function setZooArcadia(?ZooArcadia $zooArcadia): static
-    {
-        $this->zooArcadia = $zooArcadia;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
@@ -87,4 +76,17 @@ class Carousel
 
         return $this;
     }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
 }

@@ -17,20 +17,45 @@ class UserService
         $this->passwordHasher = $passwordHasher;
     }
 
+    
     public function createUser(User $user): void
     {
+        if (!$user->getPassword()) {
+            throw new \InvalidArgumentException('Password cannot be empty');
+        }
+
         $hashedPassword = $this->passwordHasher->hashPassword($user, $user->getPassword());
         $user->setPassword($hashedPassword);
         $user->setCreatedAt(new \DateTimeImmutable());
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Failed to create user: ' . $e->getMessage());
+        }
     }
 
+    
     public function updateUser(User $user): void
     {
         $user->setUpdatedAt(new \DateTimeImmutable());
 
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Failed to update user: ' . $e->getMessage());
+        }
+    }
+
+    
+    public function deleteUser(User $user): void
+    {
+        try {
+            $this->entityManager->remove($user);
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Failed to delete user: ' . $e->getMessage());
+        }
     }
 }

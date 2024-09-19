@@ -17,6 +17,8 @@ class Veterinaire extends User
 
     public function __construct()
     {
+        parent::__construct();
+        $this->setRoles(['ROLE_VETERINAIRE']);
         $this->compteRenduVets= new ArrayCollection();
         $this->commentairesHabitats = new ArrayCollection();
     }
@@ -42,7 +44,6 @@ class Veterinaire extends User
     public function removeCompteRenduVet(CompteRenduVet $compteRenduVet): static
     {
         if ($this->compteRenduVets->removeElement($compteRenduVet)) {
-            // set the owning side to null (unless already changed)
             if ($compteRenduVet->getVeterinaire() === $this) {
                 $compteRenduVet->setVeterinaire(null);
             }
@@ -72,7 +73,6 @@ class Veterinaire extends User
     public function removeCommentairesHabitat(CommentairesHabitat $commentairesHabitat): static
     {
         if ($this->commentairesHabitats->removeElement($commentairesHabitat)) {
-            // set the owning side to null (unless already changed)
             if ($commentairesHabitat->getVeterinaire() === $this) {
                 $commentairesHabitat->setVeterinaire(null);
             }

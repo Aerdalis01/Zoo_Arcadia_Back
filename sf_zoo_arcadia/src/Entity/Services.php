@@ -6,6 +6,7 @@ use App\Repository\ServicesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
 #[ORM\InheritanceType('SINGLE_TABLE')]
@@ -17,18 +18,23 @@ abstract class Services
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('services_basic')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('services_basic')]
     private ?string $nomService = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('services_basic')]
     private ?string $titreService = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('services_basic')]
     private ?string $description = null;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services', cascade: ['persist', 'remove'], orphanRemoval:true)]
+    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services', cascade: ['persist', 'remove', ], orphanRemoval:true)]
+    #[Groups('services_basic')]
     private Collection $images;
 
     #[ORM\Column]
@@ -37,17 +43,10 @@ abstract class Services
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'services')]
-    private ?Employe $employe = null;
-
-    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service')]
+    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service', cascade: ['remove'], orphanRemoval: true)]
+    #[Groups('services_basic')]
     private Collection $sousServices;
 
-    #[ORM\ManyToOne(inversedBy: 'services')]
-    private ?Admin $admin = null;
-
-    #[ORM\ManyToOne(inversedBy: 'services')]
-    private ?ZooArcadia $zooArcadia = null;
 
     public function __construct()
     {
@@ -117,7 +116,6 @@ abstract class Services
     public function removeImage(Images $image): static
     {
         if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
             if ($image->getServices() === $this) {
                 $image->setServices(null);
             }
@@ -150,18 +148,6 @@ abstract class Services
         return $this;
     }
 
-    public function getEmploye(): ?Employe
-    {
-        return $this->employe;
-    }
-
-    public function setEmploye(?Employe $employe): static
-    {
-        $this->employe = $employe;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, SousService>
      */
@@ -188,30 +174,6 @@ abstract class Services
                 $sousService->setService(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getAdmin(): ?Admin
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?Admin $admin): static
-    {
-        $this->admin = $admin;
-
-        return $this;
-    }
-
-    public function getZooArcadia(): ?ZooArcadia
-    {
-        return $this->zooArcadia;
-    }
-
-    public function setZooArcadia(?ZooArcadia $zooArcadia): static
-    {
-        $this->zooArcadia = $zooArcadia;
 
         return $this;
     }

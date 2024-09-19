@@ -3,109 +3,158 @@
 namespace App\Controller;
 
 use App\Entity\Habitats;
+use Psr\Log\LoggerInterface;
 use App\Form\HabitatsType;
 use App\Service\HabitatsService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\HabitatsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
-#[Route('/api/habitats', name: 'app_api_habitats_')]
+
+#[Route('/api/admin/habitats', name: 'app_api_admin_habitats_')]
 class HabitatsController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private HabitatsService $habitatsService;
+    private LoggerInterface $logger; 
+    
 
-    public function __construct(EntityManagerInterface $entityManager, HabitatsService $habitatsService)
+    public function __construct(EntityManagerInterface $entityManager, HabitatsService $habitatsService, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->habitatsService = $habitatsService;
+        $this->logger = $logger;
+        
     }
 
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(): Response
     {
         $habitats = $this->entityManager->getRepository(Habitats::class)->findAll();
+        
+        
+        $habitatsArray = [];
+        foreach ($habitats as $habitat) {
+            $habitatsArray[] = [
+                'id' => $habitat->getId(),
+                'nom' => $habitat->getNom(),
+                'description' => $habitat->getDescription(),
+                
+            ];
+        }
 
-        return $this->json($habitats);
+        return $this->json($habitatsArray, Response::HTTP_OK);
     }
 
-    #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
+
+    #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function show(int $id): Response
+    {
+        $habitat = $this->entityManager->getRepository(Habitats::class)->find($id);
+
+        if (!$habitat) {
+            return $this->json(['error' => 'Habitat not found'], Response::HTTP_NOT_FOUND);
+        }
+        $data = [
+            'id' => $habitat->getId(),
+            'nom' => $habitat->getNom(),
+            'description' => $habitat->getDescription(),
+            
+        ];
+
+        
+        return $this->json($data, Response::HTTP_OK);
+
+        $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:3000');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+
+    return $response;
+    }
+
+
+    #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request): Response
     {
-        $habitat = new Habitats();
-        $form = $this->createForm(HabitatsType::class, $habitat);
+        $form = $this->createForm(HabitatsType::class);
         $form->handleRequest($request);
+    //dd(json_decode($request->getContent(),true));
+        $data = json_decode($request->getContent(),true); 
+        $nom = $data['nom'];
+        $description = $data['description'];
+        $nomImage= $data['image']['nom'];
+        $imagePath = $data['image']['imagePath'];
+        $imageSubDirectory = $data['image']['imageSubDirectory'];
+        
+        
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
+        try {
             $habitat = $this->habitatsService->createHabitat(
-                $data->getNom(),
-                $data->getDescription(),
-                $data->getZooArcadia(),
-                $data->getImage()
+                $nom,
+                $description,
+                $nomImage,
+                $imagePath,
+                $imageSubDirectory,
             );
+            return $this->json(['message' => 'habitat created successfully'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            dd($e);
+            $this->logger->error('Error creating habitat: ' . $e->getMessage());
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    
+    }
 
-            foreach ($data->getImages() as $image) {
-                $habitat->addImage($image);
-            }
-
-            $this->entityManager->flush();
-
-            return $this->redirectToRoute('habitats_index');
+    #[Route('/{id}', name: 'edit', methods: ['PUT'])]
+public function edit(Request $request, int $id, HabitatsRepository $habitatsRepository): Response
+{
+    $habitat = $habitatsRepository->find($id);
+        if (!$habitat) {
+            return $this->json(['error' => 'Habitat not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->render('habitats/new.html.twig', [
-            'habitat' => $habitat,
-            'form' => $form->createView(),
-        ]);
-    }
+        $data = json_decode($request->getContent(), true);
 
-    #[Route('/{id}', name: 'habitats_show', methods: ['GET'])]
-    public function show(Habitats $habitat): Response
-    {
-        return $this->render('habitats/show.html.twig', [
-            'habitat' => $habitat,
-        ]);
-    }
+        
+        $nom = $data['nom'] ?? null;
+        $description = $data['description'] ?? null;
+        $nomImage = $data['image']['nom'] ?? null;
+        $imagePath = $data['image']['imagePath'] ?? null;
+        $imageSubDirectory = $data['image']['imageSubDirectory'] ?? null;
 
-    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Habitats $habitat): Response
-    {
-        $form = $this->createForm(HabitatsType::class, $habitat);
-        $form->handleRequest($request);
+        try {
+            
+            $this->habitatsService->updateHabitat($habitat, $nom, $description, $nomImage, $imagePath, $imageSubDirectory);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            $habitat = $this->habitatsService->updateHabitat($habitat, [
-                'nom' => $data->getNom(),
-                'description' => $data->getDescription(),
-            ]);
-
-            foreach ($data->getImages() as $image) {
-                $habitat->addImage($image);
-            }
-
-            $this->entityManager->flush();
-
-            return $this->redirectToRoute('habitats_index');
+            return $this->json(['message' => 'Habitat updated successfully', 'habitat' => $habitat], Response::HTTP_OK);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred while updating the animal'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        return $this->render('habitats/edit.html.twig', [
-            'habitat' => $habitat,
-            'form' => $form->createView(),
-        ]);
     }
 
-    #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(Request $request, Habitats $habitat): Response
+
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteAnimal(int $id, HabitatsRepository $habitatsRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$habitat->getId(), $request->request->get('_token'))) {
+        $habitat = $habitatsRepository->find($id);
+        if (!$habitat) {
+            return $this->json(['error' => 'Habitat not found'], Response::HTTP_NOT_FOUND);
+        }
+    
+        try {
+            
             $this->habitatsService->deleteHabitat($habitat);
+    
+            return $this->json(['message' => 'Habitat deleted successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred while deleting the habitat'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        return $this->redirectToRoute('habitats_index');
     }
 }

@@ -26,23 +26,15 @@ class Habitats
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(targetEntity: ZooArcadia::class, inversedBy: 'habitats', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?ZooArcadia $zooArcadia = null;
-
-
-    #[ORM\ManyToOne(inversedBy: 'habitats', cascade: ['persist', 'remove'])]
-    private ?Admin $admin = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
-
 
     #[ORM\OneToMany(targetEntity: Animaux::class, mappedBy: 'habitats')]
     private Collection $animaux;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'habitats')]
-    private Collection $images;
+    #[ORM\OneToOne(targetEntity: Images::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Images $image = null;
 
     #[ORM\OneToMany(targetEntity: CommentairesHabitat::class, mappedBy: 'habitat')]
     private Collection $commentairesHabitats;
@@ -50,7 +42,6 @@ class Habitats
     public function __construct()
     {
         $this->animaux = new ArrayCollection();
-        $this->images = new ArrayCollection();
         $this->commentairesHabitats = new ArrayCollection();
     }
 
@@ -98,30 +89,6 @@ class Habitats
         return $this;
     }
 
-
-    public function getZooArcadia(): ?ZooArcadia
-    {
-        return $this->zooArcadia;
-    }
-
-    public function setZooArcadia(?ZooArcadia $zooArcadia): self
-    {
-        $this->zooArcadia = $zooArcadia;
-        return $this;
-    }
-
-    public function getAdmin(): ?Admin
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?Admin $admin): static
-    {
-        $this->admin = $admin;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -162,35 +129,17 @@ class Habitats
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Images>
-     */
-    public function getImages(): Collection
+    public function getImage(): ?Images
     {
-        return $this->images;
+        return $this->image;
     }
 
-    public function addImage(Images $image): static
+    public function setImage(?Images $image): self
     {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setHabitats($this);
-        }
-
+        $this->image = $image;
         return $this;
     }
 
-    public function removeImage(Images $image): static
-    {
-        if ($this->images->removeElement($image)) {
-            if ($image->getHabitats() === $this) {
-                $image->setHabitats(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, CommentairesHabitat>

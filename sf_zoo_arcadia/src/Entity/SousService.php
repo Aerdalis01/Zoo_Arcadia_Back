@@ -6,6 +6,7 @@ use App\Repository\SousServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SousServiceRepository::class)]
 #[ORM\InheritanceType('SINGLE_TABLE')]
@@ -16,15 +17,19 @@ abstract class SousService
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('services_basic')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('services_basic')]
     private ?string $nomSousService = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('services_basic')]
     private ?string $description = null;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'sousService',  cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'sousService',  cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups('services_basic')]
     private Collection $images;
 
     #[ORM\ManyToOne(inversedBy: 'sousServices')]
@@ -36,6 +41,7 @@ abstract class SousService
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+    
 
     public function __construct()
     {
@@ -136,4 +142,6 @@ abstract class SousService
 
         return $this;
     }
+
+
 }

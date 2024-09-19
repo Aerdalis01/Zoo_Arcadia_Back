@@ -17,10 +17,12 @@ class AvisType extends AbstractType
     {
         $builder
             ->add('pseudo', TextType::class, [
-                'label' => 'Pseudo'
+                'label' => 'Pseudo',
+                'required' => true
             ])
             ->add('commentaireAvis', TextareaType::class, [
-                'label' => 'Commentaire'
+                'label' => 'Commentaire',
+                'required' => true
             ])
             ->add('note', ChoiceType::class, [
                 'choices'  => [

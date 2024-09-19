@@ -15,7 +15,7 @@ class ImagesFixtures extends Fixture implements FixtureGroupInterface, Dependent
         $restaurant = $this->getReference('Restaurant');
         $snack = $this->getReference('Snack');
         $camionGlace = $this->getReference('Camion_glace');
-
+        
 
         //Elements de verification
         echo 'Restaurant: ' . ($restaurant ? 'found' : 'not found') . PHP_EOL;
@@ -47,6 +47,10 @@ class ImagesFixtures extends Fixture implements FixtureGroupInterface, Dependent
         $imageCamionGlace->setSousService($camionGlace);
         $manager->persist($imageCamionGlace);
 
+        $carteZoo = new Images();
+        $carteZoo->setNom('Carte du Zoo');
+        $carteZoo->setImagePath('public/uploads/images/carte_zoo.png');
+        $carteZoo->setImageSubDirectory('images');
 
         $image1 = new Images();
         $image1->setNom('Jungle');
