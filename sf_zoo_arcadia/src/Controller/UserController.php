@@ -10,6 +10,7 @@ use App\Service\UserService;
 use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,6 +25,29 @@ class UserController extends AbstractController
     {
         $this->userService = $userService;
         $this->mailerService = $mailerService;
+    }
+    public function getUserInfo(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        // Vérifie si l'utilisateur est connecté
+        if (!$user) {
+            return new JsonResponse([
+                'isConnected' => false,
+                'roles' => []
+            ]);
+        }
+
+        // Récupère les rôles de l'utilisateur
+        $roles = $user->getRoles();
+        $formattedRoles = array_map(function($role) {
+            return strtolower(str_replace('ROLE_', '', $role));
+        }, $roles);
+
+        return new JsonResponse([
+            'isConnected' => true,
+            'roles' => $formattedRoles
+        ]);
     }
 
     #[Route('/create', name: 'create', methods: ['POST'])]

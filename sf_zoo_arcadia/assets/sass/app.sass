@@ -1,0 +1,30 @@
+/*  
+ MAIN.sass
+
+ Fichier principal qui va importer les autres fichiers.  
+ Stucture 7 - 1 = un fichier qui gère 7 dossiers. 
+ L'ordre des imports : 
+ - reset
+ - vendors
+ - pages
+ - themes
+ - layout
+ - components*/
+
+
+@import "~bootstrap/scss/bootstrap";
+
+@use "base/_font"
+
+@use "layout/_allLayout"
+
+@use "components/_allComponents.sass"
+
+
+@use "abstracts/_all"
+
+@use "pages/_allPages"
+
+@use "themes/_allThemes"
+
+@use "vendors/_bootstrap"
