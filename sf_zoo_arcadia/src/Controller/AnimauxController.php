@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use Psr\Log\LoggerInterface;
 use App\Entity\Animaux;
-use App\Form\AnimauxType;
+use App\Entity\Habitats;
+use App\Entity\Images;
+use App\Entity\Races;
+use App\Service\ImageManagerService;
 use App\Repository\AnimauxRepository;
 use App\Service\AnimauxService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,20 +21,25 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 
+
 #[Route('/api/admin/animaux', name: 'app_api_admin_animaux_')]
 class AnimauxController extends AbstractController
 {
-    private AnimauxService $animauxService;
-    private LoggerInterface $logger; 
-    private Serializer $serializer;
+    private  $animauxService;
+    private  $logger; 
+    private  $serializer;
+    private  $entityManager;
+    private $imageManager;
 
-    public function __construct(AnimauxService $animauxService, LoggerInterface $logger)
+    public function __construct(AnimauxService $animauxService, LoggerInterface $logger,  EntityManagerInterface $entityManager, ImageManagerService $imageManager)
     {
         $this->animauxService = $animauxService;
         $this->logger = $logger;
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
         $this->serializer = new Serializer($normalizers, $encoders,);
+        $this->entityManager = $entityManager;
+        $this->imageManager = $imageManager;
     }
 
     #[Route('/', name: 'index', methods: ['GET'])]
@@ -57,34 +65,52 @@ class AnimauxController extends AbstractController
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request): Response
     {
-        $form = $this->createForm(AnimauxType::class);
-        $form->handleRequest($request);
-    //dd(json_decode($request->getContent(),true));
-        $data = json_decode($request->getContent(),true); 
-        $prenom = $data['prenom'];
-        $race = $data['race'];
-        $nom= $data['image']['nom'];
-        $imagePath = $data['image']['imagePath'];
-        $imageSubDirectory = $data['image']['imageSubDirectory'];
-        $habitat = $data['habitats'];
-        
+        // Décoder le JSON reçu dans la requête
+        $data = json_decode($request->getContent(), true);
 
+        $prenom = $data['prenom'] ?? null;
+        $raceId = $data['race'] ?? null;
+        $habitatId = $data['habitat'] ?? null;
+        $imageId = $data['image'] ?? null; 
+
+        if (!$prenom || !$raceId || !$habitatId) {
+            return $this->json(['error' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+        }
+        
         try {
-            $animal = $this->animauxService->createAnimal(
-                $prenom,
-                $race,
-                $nom,
-                $imagePath,
-                $imageSubDirectory,
-                $habitat
-            );
+            // Charger les entités Race, Habitat et Image depuis la base de données
+            $race = $this->entityManager->getRepository(Races::class)->find($raceId);
+            $habitat = $this->entityManager->getRepository(Habitats::class)->find($habitatId);
+
+            if (!$race || !$habitat) {
+                return $this->json(['error' => 'Invalid race or habitat'], Response::HTTP_BAD_REQUEST);
+            }
+            $animal = new Animaux();
+            $animal->setPrenom($prenom);
+            $animal->setRace($race);
+            $animal->setHabitats($habitat);
+            $animal->setCreatedAt(new \DateTimeImmutable());
+             // Gestion de l'image via le service ImageManagerService
+            if ($imageId) {
+                $image = $this->entityManager->getRepository(Images::class)->find($imageId);
+                if (!$image) {
+                    return $this->json(['error' => 'Image not found'], Response::HTTP_BAD_REQUEST);
+                }
+                $animal->setImage($image); // Associer l'image à l'animal
+                }
+            
+            
+            // Persister l'animal
+            $this->entityManager->persist($animal);
+            $this->entityManager->flush();
+
             return $this->json(['message' => 'Animal created successfully'], Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            dd($e);
-            $this->logger->error('Error creating animal: ' . $e->getMessage());
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            // Retourner le message de l'exception dans la réponse pour déboguer
+            return $this->json([
+                'error' => $e -> getMessage(),
+                ], Response::HTTP_BAD_REQUEST);
         }
-    
     }
 
     #[Route('/{id}', name: 'edit', methods: ['PUT'])]

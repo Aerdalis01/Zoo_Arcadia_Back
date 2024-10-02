@@ -26,19 +26,19 @@ class UserController extends AbstractController
         $this->userService = $userService;
         $this->mailerService = $mailerService;
     }
+    #[Route('/', name: 'info', methods: ['GET'])]
     public function getUserInfo(): JsonResponse
     {
         $user = $this->getUser();
 
-        // Vérifie si l'utilisateur est connecté
+        
         if (!$user) {
             return new JsonResponse([
                 'isConnected' => false,
-                'roles' => []
+                'roles' => ['ROLE_ADMIN', 'ROLE_VETERINAIRE', 'ROLE_EMPLOYE']
             ]);
         }
-
-        // Récupère les rôles de l'utilisateur
+        
         $roles = $user->getRoles();
         $formattedRoles = array_map(function($role) {
             return strtolower(str_replace('ROLE_', '', $role));

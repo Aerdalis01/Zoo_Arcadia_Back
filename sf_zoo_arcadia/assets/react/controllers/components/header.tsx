@@ -1,34 +1,56 @@
 import  { useState, useEffect } from 'react';
 
+
 const Header: React.FC = () => {
   // État pour gérer l'utilisateur connecté et ses rôles
   const [isConnected, setIsConnected] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Récupère l'état de connexion et les rôles depuis l'API
   useEffect(() => {
     fetch('/api/admin/user')
-      .then(response => response.json())
+      .then(response => {
+        // Afficher la réponse dans la console pour voir son contenu
+  
+        // Vérifier le type de contenu (Content-Type) de la réponse
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          // Si la réponse est en JSON, la parser
+          return response.json();
+        } else {
+          // Si ce n'est pas du JSON, afficher le texte brut
+          return response.text();
+        }
+      })
       .then(data => {
+  
+        if (typeof data === 'string') {
+          throw new Error(`La réponse n'est pas un JSON valide: ${data}`);
+        }
+  
+        // Si c'est du JSON valide, mettre à jour les états
         setIsConnected(data.isConnected);
         setUserRoles(data.roles);
-        setIsLoading(false);  // Fin du chargement
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Erreur lors de la requête ou du parsing JSON:', err);
+        setIsLoading(false);
       });
   }, []);
 
-  if (isLoading) {
-    return <p>Chargement...</p>; // Affichage pendant le chargement
-  }
-
   return (
+    
+  <header id="header" className="header">
     <nav className="navbar navbar-expand-md bg-primary h-100 z-3 ">
       <div className="container-fluid justify-content-center">
         <div className="row w-100">
           <div className="container__menu-burger col-4 d-flex justify-content-start align-items-center">
             <img
               className="menu-burger"
-              src="/assets/img/Accueil/Burger Nav.svg"
+              src="/uploads/images/svgDeco/Burger Nav.svg"
               alt="Menu burger"
             />
           </div>
@@ -36,7 +58,7 @@ const Header: React.FC = () => {
             <a className="navbar-brand m-0" href="/">
               <img
                 className="logo-arcadia align-self-center"
-                src="/assets/img/Accueil/Logo.svg"
+                src="/uploads/images/svgDeco/Logo.svg"
                 alt="Logo du zoo Arcadia"
               />
             </a>
@@ -116,10 +138,10 @@ const Header: React.FC = () => {
             { !isConnected && (
             <img
               className="icon-user"
-              src="/assets/img/Accueil/Seconnecter.svg"
+              src="/uploads/images/svgDeco/Seconnecter.svg"
               alt="Icone se connecter"
             />)}
-            { !isConnected && (
+            { isConnected && (
             <button
               id="btn2NavbarDeco"
               className="btn btn-navbar--deco btn-warning fw-semibold"
@@ -143,7 +165,6 @@ const Header: React.FC = () => {
               id="btnNavbarDeco"
               className="btn btn-navbar--deco btn-warning fw-semibold px-2"
               type="button"
-              data-show="connected"
             >
               Se déconnecter
             </button>)}
@@ -151,6 +172,67 @@ const Header: React.FC = () => {
         </div>
       </div>
     </nav>
+    {/* Modal Menu */}
+    <div className="container-fluid modal-menu d-flex flex-column align-items-center text-center h-100 w-100 p-0">
+        <div className="content-exit d-flex justify-content-center align-items-center bg-primary w-100">
+          <a className="logo" href="/">
+            <img src="/uploads/images/svgDeco/Logo.svg" alt="Logo du zoo Arcadia" />
+          </a>
+          <img className="menu-exit" src="/uploads/images/svgDeco/croix.svg" alt="Image d'une croix" />
+        </div>
+        <ul className="navbar-nav text-center d-flex align-items-center mb-5 w-100">
+          <li className="nav-item col-3 mb-5">
+            <a className="nav-link fs-1 active fw-semibold" aria-current="page" href="/">
+              Accueil
+            </a>
+          </li>
+          <li className="nav-item col-3 mb-5">
+            <a className="nav-link fs-1 fw-semibold" href="/services">
+              Service
+            </a>
+          </li>
+          <li className="nav-item col-3 mb-5">
+            <a className="nav-link fs-1 fw-semibold" href="/habitats">
+              Habitats
+            </a>
+          </li>
+          <li className="nav-item col-3 mb-5">
+            <a className="nav-link fs-1 fw-semibold" href="/contact">
+              Contact
+            </a>
+          </li>
+          {isConnected && (
+            <li className="nav-item col-3 mb-5" data-show="connected">
+              {userRoles.includes('employe') && (
+                <a className="nav-link fs-1 fw-semibold" href="/employe" data-show="employe">
+                  Espace employe
+                </a>
+              )}
+              {userRoles.includes('veterinaire') && (
+                <a className="nav-link fs-1 fw-semibold" href="/veto" data-show="veto">
+                  Espace vétérinaire
+                </a>
+              )}
+              {userRoles.includes('admin') && (
+                <a className="nav-link fs-1 fw-semibold" href="/admin" data-show="admin">
+                  Espace admin
+                </a>
+              )}
+            </li>
+          )}
+          {!isConnected && (
+            <li className="nav-item item-connexion col-3 mb-5 w-100">
+              <a className="nav-link fs-1 fw-semibold" href="/connexion" data-show="disconnected">
+                Se connecter
+              </a>
+              <a id="btn3NavbarDeco" className="nav-link--deco fs-1 fw-semibold" data-show="connected">
+                Se déconnecter
+              </a>
+            </li>
+          )}
+        </ul>
+      </div>
+    </header>
   );
 };
 

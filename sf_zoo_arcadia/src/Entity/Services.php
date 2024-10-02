@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'Type_Services', type: 'string')]
 #[ORM\DiscriminatorMap(['services' => Services::class, 'restauration' => Restauration::class, 'visite_guidee' => VisiteGuidee::class, 'petit_train' => PetitTrain::class, 'info_service' => InfoService::class])]
@@ -33,7 +34,7 @@ abstract class Services
     #[Groups('services_basic')]
     private ?string $description = null;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services', cascade: ['persist', 'remove', ], orphanRemoval:true)]
+    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'services', cascade: ['persist', 'remove', ], orphanRemoval:true, fetch: 'EAGER')]
     #[Groups('services_basic')]
     private Collection $images;
 
@@ -43,10 +44,27 @@ abstract class Services
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service', cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service', cascade: ['remove'], orphanRemoval: true, fetch: 'EAGER')]
     #[Groups('services_basic')]
     private Collection $sousServices;
 
+    #[Groups('services_basic')]
+    public function getTypeService(): string
+    {
+        return (new \ReflectionClass($this))->getShortName();
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+    
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
     public function __construct()
     {

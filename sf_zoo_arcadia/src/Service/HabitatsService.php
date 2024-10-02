@@ -9,9 +9,9 @@ use Doctrine\ORM\EntityManagerInterface;
 class HabitatsService
 {
     private EntityManagerInterface $entityManager;
-    private ImageManager $imageManager;
+    private ImageManagerService $imageManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ImageManager $imageManager)
+    public function __construct(EntityManagerInterface $entityManager, ImageManagerService $imageManager)
     {
         $this->entityManager = $entityManager;
         $this->imageManager = $imageManager;

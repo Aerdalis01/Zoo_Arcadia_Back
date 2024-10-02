@@ -57,9 +57,16 @@ services:
                 $adminInitializer: '@App\Service\AdminInitializer'
             tags:
                 - { name: 'console.command' }
-    App\Service\ImageManager:
+    App\Service\ImageManagerService:
         arguments:
             $imageDirectory: '%images_directory%'
+            
+    App\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+    App\Service\ServicesService:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
     # App\EventListener\CorsListener:
     #     tags:
     #         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }

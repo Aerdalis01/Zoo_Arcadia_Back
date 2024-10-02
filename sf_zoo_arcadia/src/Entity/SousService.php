@@ -17,23 +17,24 @@ abstract class SousService
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('services_basic')]
+    #[Groups('Sous_service_basic', 'services_basic')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
-    #[Groups('services_basic')]
+    #[Groups('Sous_service_basic', 'services_basic')]
     private ?string $nomSousService = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('services_basic')]
+    #[Groups('Sous_service_basic', 'services_basic')]
     private ?string $description = null;
 
-    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'sousService',  cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups('services_basic')]
+    #[ORM\OneToMany(targetEntity: Images::class, mappedBy: 'sousService',  cascade: ['persist', 'remove'], orphanRemoval: true, fetch: 'EAGER')]
+    #[Groups('Sous_service_basic', 'services_basic')]
     private Collection $images;
 
     #[ORM\ManyToOne(inversedBy: 'sousServices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('Sous_service_basic', 'services_basic')]
     private ?Services $service = null;
 
     #[ORM\Column]
@@ -42,7 +43,17 @@ abstract class SousService
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
     
-
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+    
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
     public function __construct()
     {
         $this->images = new ArrayCollection();

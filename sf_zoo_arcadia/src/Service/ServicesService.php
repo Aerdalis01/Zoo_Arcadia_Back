@@ -11,14 +11,16 @@ use App\Entity\VisiteGuidee;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class ServicesService
 {
     private EntityManagerInterface $entityManager;
-    private ImageManager $imageManager;
+    private ImageManagerService $imageManager;
     private LoggerInterface $logger;
 
-    public function __construct(EntityManagerInterface $entityManager, ImageManager $imageManager, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $entityManager, ImageManagerService $imageManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->imageManager = $imageManager;
@@ -26,10 +28,10 @@ class ServicesService
     }
 
     
-    public function createOrUpdateService(object $entity, array $data): object
+    public function createOrUpdateService(?Services $entity, array $data, $image): object
     {
-        if ($entity === null && isset($data['type'])) {
-            $entity = $this->instantiateService($data['type']);
+        if ($entity === null && isset($data['typeService'])) {
+            $entity = $this->instantiateService($data['typeService']);
         
             if (!$entity) {
                 throw new \InvalidArgumentException('Type de service non valide');
@@ -37,11 +39,10 @@ class ServicesService
         }
         
         if ($entity instanceof Services) {
-            $this->logger->info('Modification du service avec ID : ' . $entity->getId());
-
             $entity->setNomService($data['nomService'] ?? $entity->getNomService());
             $entity->setTitreService($data['titreService'] ?? $entity->getTitreService());
             $entity->setDescription($data['description'] ?? $entity->getDescription());
+            
 
             if (!$entity->getCreatedAt()) {
                 $entity->setCreatedAt(new \DateTimeImmutable());
@@ -52,42 +53,18 @@ class ServicesService
             if ($images instanceof PersistentCollection && !$images->isInitialized()) {
                 $this->entityManager->initializeObject($images);
             }
-            // Gestion des images du service
-            if (isset($data['images']) && is_array($data['images'])) {
-                foreach ($data['images'] as $imageData) {
-                    $image = $this->imageManager->manageImage(
-                        $entity,
-                        $imageData['id'] ?? null,
-                        $imageData['nom'] ?? null,
-                        $imageData['imagePath'] ?? null,
-                        $imageData['imageSubDirectory'] ?? null
-                    );
-                    if ($image) {
+            
+                    if ($images) {
                         $entity->addImage($image);
-                        $this->entityManager->persist($image); 
                     }
-                }
-            }
             $this->entityManager->persist($entity);
             $this->entityManager->flush(); 
 
         return $entity;
         }
     }
-    public function createOrUpdateServiceByType(array $data): object
-    {   
-        // Instancier la bonne sous-classe de Services en fonction du type
-        $service = $this->instantiateService($data['type']);
-        if (!$service) {
-            throw new \InvalidArgumentException('Type de service non valide');
-        }
-
-        // Appeler createOrUpdateService pour gérer les sous-services et les images
-        return $this->createOrUpdateService($service, $data);
-    }   
-    // Instancier la sous-classe concrète de SousService
     
-    private function instantiateService(string $type): ?object
+    private function instantiateService(string $type): ?Services
     {
         switch ($type) {
             case 'restauration':
@@ -122,5 +99,74 @@ class ServicesService
 
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
+    }
+    public function convertServiceType(Services $oldService, string $newType): ?Services
+    {
+        // Vérifier si le nouveau type est valide 
+        $validTypes = ['restauration', 'visite_guidee', 'petit_train', 'info_service'];
+        if (!in_array($newType, $validTypes)) {
+            return null;
+        }
+
+        // Création d'une nouvelle instance de l'entité cible
+        $newService = null;
+        switch ($newType) {
+            case 'restauration':
+                $newService = new Restauration();
+                break;
+            case 'visite_guidee':
+                $newService = new VisiteGuidee();
+                break;
+            case 'petit_train':
+                return new PetitTrain();
+            case 'info_service':
+                return new InfoService();
+            default:
+                return null;
+        }
+
+        // Copier les propriétés communes de l'ancien service vers le nouveau
+        $newService->setNomService($oldService->getNomService());
+        $newService->setDescription($oldService->getDescription());
+        $newService->setTitreService($oldService->getTitreService());
+
+        // Copier les relations si nécessaire
+        foreach ($oldService->getImages() as $image) {
+            $newService->addImage($image);
+        }
+
+        foreach ($oldService->getSousServices() as $sousService) {
+            $newService->addSousService($sousService);
+        }
+
+        // Supprimer l'ancien service
+        $this->entityManager->remove($oldService);
+
+        // Retourner la nouvelle instance
+        return $newService;
+    }
+    public function changeServiceType(int $id, Request $request): JsonResponse
+    {
+        
+        $service = $this->entityManager->getRepository(Services::class)->find($id);
+
+        if (!$service) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
+        }
+
+        // Récupérer le nouveau type d'entité depuis la requête
+        $newType = $request->request->get('newType'); 
+        
+        $newService = $this->convertServiceType($service, $newType);
+
+        if (!$newService) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Impossible de changer le type du service'], 400);
+        }
+
+        // Sauvegarder la nouvelle entité
+        $this->entityManager->persist($newService);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['status' => 'success', 'id' => $newService->getId()], 200);
     }
 }

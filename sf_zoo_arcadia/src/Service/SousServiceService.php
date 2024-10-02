@@ -6,25 +6,27 @@ use App\Entity\Services;
 use App\Entity\SousService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
-
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class SousServiceService
 {
     private EntityManagerInterface $entityManager;
-    private ImageManager $imageManager;
+    private ImageManagerService $imageManager;
 
 
-    public function __construct(EntityManagerInterface $entityManager, ImageManager $imageManager)
+    public function __construct(EntityManagerInterface $entityManager, ImageManagerService $imageManager)
     {
         $this->entityManager = $entityManager;
         $this->imageManager = $imageManager;
 
     }
 
-    public function createOrUpdateSousService(?SousService $entity, array $data): SousService
+    public function createOrUpdateSousService(?SousService $entity, array $data, $image): SousService
     {
-        if ($entity === null && isset($data['type'])) {
-            $entity = $this->instantiateSousService($data['type']);
+        
+        if ($entity === null && isset($data['typeSousService'])) {
+            $entity = $this->instantiateSousService($data['typeSousService']);
 
             if (!$entity) {
                 throw new \InvalidArgumentException('Type de sous service non valide');
@@ -32,19 +34,14 @@ class SousServiceService
         }
 
         if ($entity instanceof SousService) {
-
             $entity->setNomSousService($data['nomSousService'] ?? $entity->getNomSousService());
             $entity->setDescription($data['description'] ?? $entity->getDescription());
             
-
-            if (isset($data['nomService'])) {
-                // Rechercher le service par son nom
-                $service = $this->entityManager->getRepository(Services::class)->findOneBy(['nomService' => $data['nomService']]);
+            if (isset($data['nomService']) && !empty($data['nomService'])) {
+                $service = $this->entityManager->getRepository(Services::class)->find(['id' => $data['nomService']]);
                 if (!$service) {
                     throw new \InvalidArgumentException('Service non trouvé pour le nom donné.');
                 }
-    
-                // Associer le service trouvé au sous-service
                 $entity->setService($service);
             } else {
                 throw new \InvalidArgumentException('Le nom du service est requis pour associer le sous-service.');
@@ -60,30 +57,17 @@ class SousServiceService
             if ($images instanceof PersistentCollection && !$images->isInitialized()) {
                 $this->entityManager->initializeObject($images);
             }
-    
-            // Gestion des images associées
-            if (isset($data['images']) && is_array($data['images'])) {
-                foreach ($data['images'] as $imageData) {
-                    $image = $this->imageManager->manageImage(
-                        $entity,
-                        $imageData['id'] ?? null,
-                        $imageData['nom'] ?? null,
-                        $imageData['imagePath'] ?? null,
-                        $imageData['imageSubDirectory'] ?? null
-                    );
+            
                     if ($image) {
                         $entity->addImage($image);
-                        $this->entityManager->persist($image);
                     }
-                }
-            }
-    
-            // Persistance de l'entité et des modifications
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
         }
         return $entity;
+        throw new \RuntimeException('Échec de la création ou de la mise à jour du sous-service.');
     }
+    
     private function instantiateSousService(?string $type): ?SousService
     {
         switch ($type) {
@@ -94,7 +78,7 @@ class SousServiceService
             case 'camion_glace':
                 return new \App\Entity\CamionGlace();
             default:
-                return null;
+            return null;
         }
     }
 
@@ -115,5 +99,67 @@ class SousServiceService
 
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
+    }
+
+    public function convertSousServiceType(SousService $oldSousService, string $newType): ?SousService
+    {
+        // Vérifier si le nouveau type est valide 
+        $validTypes = ['restaurant', 'snack', 'camion_glace'];
+        if (!in_array($newType, $validTypes)) {
+            return null;
+        }
+
+        // Création d'une nouvelle instance de l'entité cible
+        $newService = null;
+        switch ($newType) {
+            case 'restaurant':
+                return new \App\Entity\Restaurant();
+            case 'snack':
+                return new \App\Entity\Snack();
+            case 'camion_glace':
+                return new \App\Entity\CamionGlace();
+            default:
+            return null;
+        }
+
+        // Copier les propriétés communes de l'ancien service vers le nouveau
+        $newSousService->setNomService($oldSousService->getNomService());
+        $newSousService->setDescription($oldSousService->getDescription());
+        $newSousService->setTitreService($oldSousService->getTitreService());
+
+        // Copier les relations si nécessaire
+        foreach ($oldSousService->getImages() as $image) {
+            $newService->addImage($image);
+        }
+
+        // Supprimer l'ancien service
+        $this->entityManager->remove($oldSousService);
+
+        // Retourner la nouvelle instance
+        return $newService;
+    }
+    public function changeServiceType(int $id, Request $request): JsonResponse
+    {
+        
+        $service = $this->entityManager->getRepository(Services::class)->find($id);
+
+        if (!$service) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
+        }
+
+        // Récupérer le nouveau type d'entité depuis la requête
+        $newType = $request->request->get('newType'); 
+        
+        $newSousService = $this->convertSousServiceType($service, $newType);
+
+        if (!$newSousService) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Impossible de changer le type du service'], 400);
+        }
+
+        // Sauvegarder la nouvelle entité
+        $this->entityManager->persist($newSousService);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['status' => 'success', 'id' => $newSousService->getId()], 200);
     }
 }
