@@ -10,11 +10,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'Type_Services', type: 'string')]
-#[ORM\DiscriminatorMap(['services' => Services::class, 'restauration' => Restauration::class, 'visite_guidee' => VisiteGuidee::class, 'petit_train' => PetitTrain::class, 'info_service' => InfoService::class])]
-
-abstract class Services
+class Services
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,10 +45,15 @@ abstract class Services
     private Collection $sousServices;
 
     #[Groups('services_basic')]
-    public function getTypeService(): string
-    {
-        return (new \ReflectionClass($this))->getShortName();
-    }
+    #[ORM\Column(length: 25)]
+    private ?string $type_service = null;
+
+    #[ORM\OneToMany(targetEntity: Horaires::class,mappedBy: 'service')]
+    private Collection $horaires;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Images $carteZoo = null;
+    
 
     #[ORM\PrePersist]
     public function onPrePersist(): void
@@ -68,6 +69,7 @@ abstract class Services
 
     public function __construct()
     {
+        $this->horaires = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->sousServices = new ArrayCollection();
     }
@@ -190,6 +192,63 @@ abstract class Services
             // set the owning side to null (unless already changed)
             if ($sousService->getService() === $this) {
                 $sousService->setService(null);
+            }
+        }
+
+        return $this;
+    }
+    public function getTypeService(): ?string
+    {
+        return $this->type_service;
+    }
+    public function setTypeService(?string $type_service): static
+    {
+        $this->type_service = $type_service;
+
+        return $this;
+    }
+
+    public function getCarteZoo(): ?Images
+    {
+        return $this->carteZoo;
+    }
+
+    public function setCarteZoo(?Images $carteZoo): static
+    {
+        $this->carteZoo = $carteZoo;
+
+        return $this;
+    }
+    public function getCarteZooPath(): ?string
+    {
+        return $this->carteZoo ? $this->carteZoo->getImagePath() : null;
+    }
+
+    
+    /**
+     * @return Collection<int, Horaires>
+     */
+    public function getHoraires(): Collection
+    {
+        return $this->horaires;
+    }
+
+    public function addHoraire(Horaires $horaire): static
+    {
+        if (!$this->horaires->contains($horaire)) {
+            $this->horaires->add($horaire);
+            $horaire->setInfoService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHoraire(Horaires $horaire): static
+    {
+        if ($this->horaires->removeElement($horaire)) {
+            // set the owning side to null (unless already changed)
+            if ($horaire->getInfoService() === $this) {
+                $horaire->setInfoService(null);
             }
         }
 

@@ -9,7 +9,7 @@ export function SousServiceForm() {
     nomSousService: '',
     description: '',
     typeSousService: '',
-    nomService: '',
+    idService: '',
   });
   
   const [file, setFile] = useState<File | null>(null);
@@ -35,6 +35,10 @@ export function SousServiceForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formSousService = new FormData();
+    formSousService.append('nomSousService', formData.nomSousService);
+    formSousService.append('description', formData.description);
+    formSousService.append('typeSousService', formData.typeSousService);
+    formSousService.append('idService', formData.idService);
     if (file) {
       //Appel du timestamp pour générer un nom d'image unique
       const timestamp = new Date().getTime();
@@ -44,11 +48,7 @@ export function SousServiceForm() {
       const imagePathGenerated = `/${formData.nomSousService.toLowerCase()}`;
       const imageSubDirectory = `/uploads/images/services/${imageNameGenerated}`;
       
-      formSousService.append('file', file); 
-      formSousService.append('nomSousService', formData.nomSousService);
-      formSousService.append('description', formData.description);
-      formSousService.append('typeSousService', formData.typeSousService);
-      formSousService.append('nomService', formData.nomService);
+      
       formSousService.append('file', file);
       formSousService.append('nom', imageNameGenerated);
       formSousService.append('image_sub_directory', `/uploads/images/services/${imageNameGenerated}`);
@@ -77,7 +77,7 @@ export function SousServiceForm() {
         nomSousService: '',
         description: '',
         typeSousService: '',
-        nomService: ''
+        idService: ''
       });
       setFile(null);
     })
@@ -90,15 +90,6 @@ export function SousServiceForm() {
     return (
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Type de sous service :</label>
-          <select name="typeSousService" value={formData.typeSousService} onChange={handleChange}>
-            <option value="">Sélectionner un type de sous service</option>
-            <option value="restaurant">Restaurant</option>
-            <option value="snack">Snack</option>
-            <option value="camion_glace">Camion Glacé</option>
-          </select>
-        </div>
-        <div>
           <label>Nom du sous service :</label>
           <input type="text" name="nomSousService" value={formData.nomSousService} onChange={handleChange} />
         </div>
@@ -107,14 +98,18 @@ export function SousServiceForm() {
           <label>Description :</label>
           <input type="text" name="description" value={formData.description} onChange={handleChange} />
         </div>
+        <div>
+          <label>Type de sous service :</label>
+          <input type="text" name="typeSousService" value={formData.typeSousService} onChange={handleChange} />
+        </div>
         
         <ImageForm serviceName={formData.nomSousService} onImageSelect={setFile} />
 
         <div>
         <label>Service :</label>
         <select
-          name="nomService"
-          value={formData.nomService}
+          name="idService"
+          value={formData.idService}
           onChange={handleChange}
         >
           <option value="">Sélectionner un service</option>

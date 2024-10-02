@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,9 +15,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-
-
-
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -39,21 +38,52 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey): ?Response
     {
-        return new RedirectResponse($this->urlGenerator->generate('dashboard'));
+        $roles = $token->getRoleNames();
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['status' => 'success', 'message' => 'Authentication successful'], 200);
+        }
+    
+        $roleRedirects = [
+            'ROLE_ADMIN' => 'admin_dashboard',
+            'ROLE_VETERINAIRE' => 'veterinaire_dashboard',
+            'ROLE_EMPLOYE' => 'employe_dashboard'
+        ];
+    
+        foreach ($roles as $role) {
+            if (isset($roleRedirects[$role])) {
+                return new RedirectResponse($this->urlGenerator->generate($roleRedirects[$role]));
+            }
+        }
+        
+        return new RedirectResponse($this->urlGenerator->generate('default_route'));
+
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
-        $session = $request->getSession();
-    
-        if (!$session->isStarted()) {
-            $session->start();
-        }
-    
-        // Ajouter un message d'erreur directement à la session
+    if ($request->isXmlHttpRequest()) {
+        $errorMessage = $exception instanceof CustomUserMessageAuthenticationException ? 
+            $exception->getMessageKey() : 'Invalid credentials.';
+
+        return new JsonResponse(['status' => 'error', 'message' => $errorMessage], 401);
+    }
+
+
+    $session = $request->getSession();
+
+    if (!$session->isStarted()) {
+        $session->start();
+    }
+
+    // Vérifier le type de l'exception
+    if ($exception instanceof CustomUserMessageAuthenticationException) {
+        $session->set('error_message', $exception->getMessageKey());
+    } else {
         $session->set('error_message', 'Invalid credentials.');
-    
-        return new RedirectResponse($this->urlGenerator->generate('login'));
+    }
+
+    return new RedirectResponse($this->urlGenerator->generate('login'));
     }
     
 

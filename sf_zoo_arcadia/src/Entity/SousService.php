@@ -9,10 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SousServiceRepository::class)]
-#[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'Type_Sous_Services', type: 'string')]
-#[ORM\DiscriminatorMap(['sous_services' => SousService::class, 'restaurant' => Restaurant::class, 'snack' => Snack::class, 'camion_glace' => CamionGlace::class])]
-abstract class SousService
+class SousService
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -42,6 +39,10 @@ abstract class SousService
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(length: 25)]
+    #[Groups('Sous_service_basic', 'services_basic')]
+    private ?string $typeSousService = null;
     
     #[ORM\PrePersist]
     public function onPrePersist(): void
@@ -154,5 +155,25 @@ abstract class SousService
         return $this;
     }
 
+    public function getTypeSousService(): ?string
+    {
+        return $this->typeSousService;
+    }
+
+    public function setTypeSousService(string $typeSousService): static
+    {
+        $this->typeSousService = $typeSousService;
+
+        return $this;
+    }
+    public function getMenuPath(): ?string
+    {
+        foreach ($this->getImages() as $image) {
+            if ($image->getNom() === 'menu_restaurant') {
+                return $image->getImagePath();
+            }
+        }
+        return null;
+    }
 
 }

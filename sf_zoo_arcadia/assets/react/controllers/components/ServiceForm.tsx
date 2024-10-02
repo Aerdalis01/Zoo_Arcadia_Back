@@ -90,20 +90,6 @@ export function ServiceForm() {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label>Type de service :</label>
-        <select
-          name="typeService"
-          value={formData.typeService}
-          onChange={handleChange}
-        >
-          <option value="">Sélectionner un type de service</option>
-          <option value="restauration">Restauration</option>
-          <option value="visite_guidee">Visite Guidée</option>
-          <option value="petit_train">Petit Train</option>
-          <option value="info_service">Info Service</option>
-        </select>
-      </div>
-      <div>
         <label>Nom du service :</label>
         <input
           type="text"
@@ -122,7 +108,6 @@ export function ServiceForm() {
           onChange={handleChange}
         />
       </div>
-
       <div>
         <label>Description :</label>
         <input
@@ -132,6 +117,16 @@ export function ServiceForm() {
           onChange={handleChange}
         />
       </div>
+      <div>
+        <label>Type de service :</label>
+        <input
+          type="text"
+          name="typeService"
+          value={formData.typeService}
+          onChange={handleChange}
+        />
+      </div>
+
       
       <ImageForm serviceName={formData.nomService} onImageSelect={setFile} />
 

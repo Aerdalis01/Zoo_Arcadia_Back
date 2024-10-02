@@ -67,6 +67,11 @@ services:
     App\Service\ServicesService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
+
+    App\Controller\AuthController:
+        autowire: true
+        autoconfigure: true
+        public: true
     # App\EventListener\CorsListener:
     #     tags:
     #         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }

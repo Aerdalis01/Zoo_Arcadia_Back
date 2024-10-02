@@ -3,3 +3,8 @@ app_react:
     controller: App\Controller\DefaultController::index
     requirements:
         reactRouting: .*
+
+login:
+    path: /api/auth/login
+    controller: App\Controller\AuthController::login
+    methods: [POST]

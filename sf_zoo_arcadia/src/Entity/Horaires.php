@@ -34,7 +34,7 @@ class Horaires
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'horaires')]
-    private ?InfoService $infoService = null;
+    private Services $infoService;
 
     #[ORM\Column(length: 25, nullable: true)]
     private ?string $titreHoraire = null;
@@ -117,12 +117,12 @@ class Horaires
         return $this;
     }
 
-    public function getInfoService(): ?InfoService
+    public function getInfoService(): ?Services
     {
         return $this->infoService;
     }
 
-    public function setInfoService(?InfoService $infoService): static
+    public function setInfoService(?Services $infoService): static
     {
         $this->infoService = $infoService;
 

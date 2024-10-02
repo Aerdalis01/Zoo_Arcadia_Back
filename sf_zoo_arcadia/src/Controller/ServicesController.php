@@ -2,11 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\InfoService;
-use App\Entity\PetitTrain;
-use App\Entity\Restauration;
+
 use App\Entity\Services;
-use App\Entity\VisiteGuidee;
 use App\Repository\ServicesRepository;
 use App\Service\ImageManagerService;
 use App\Service\ServicesService;
@@ -62,16 +59,12 @@ class ServicesController extends AbstractController
             $imageName = $request->request->get('nom');
             
 
-            if (!$nom || !$description || !$type || !$titre) {
-                return new JsonResponse(['status' => 'error', 'message' => 'Paramètres manquants.'], 400);
+            if (!$nom || !$type) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Paramètres nom ou type manquants.'], 400);
             }
-    
-            if (!$file) {
-                return new JsonResponse(['status' => 'error', 'message' => 'Fichier image manquant.'], 400);
-            }
-    
+            if ($file !== null){
             $image = $imageManagerService->createImage($imageName, $imageSubDirectory, $file);
-
+            }
             // Créer ou mettre à jour le -service avec le service ServiceService
             $Service = $this->servicesService->createOrUpdateService(null, [
                 'nomService' => $nom,
@@ -94,32 +87,33 @@ class ServicesController extends AbstractController
             if (!$service) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Service ou Service non trouvé'], 404);
             }
-            if (!($service instanceof Services)) {
-                return new JsonResponse(['status' => 'error', 'message' => 'L\'entité récupérée n\'est pas du type attendu.'], 400);
-            }
         try {
             $nom = $request->request->get('nomService'); 
             $description = $request->request->get('description');
             $type = $request->request->get('typeService');
             $titre = $request->request->get('titreService');
-            
-            if (!$nom || !$description || !$type || !$titre) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Paramètres manquants.'], 400);
+                
+            // Vérification des paramètres
+            if ($nom !== null) {
+                $service->setNomService($nom);
+            }
+            if ($type !== null) {
+                $service->setTypeService($type);
             }
 
-            //Comparer le type actuel de l'entité au type reçu dans le formulaire
-            $currentType = (new \ReflectionClass($service))->getShortName();
-            // Appel de la function convertServiceType pour modifier le type de service
-            if ($type !== $currentType) {
-                $service = $this->servicesService->convertServiceType($service, $type);
-                if (!$service) {
-                    return new JsonResponse(['status' => 'error', 'message' => 'Impossible de changer le type du service'], 400);
-                }
+            // Suppression du titre si non fourni
+            if ($request->request->get('titreService') === null) {
+                $service->setTitreService(null); // Supprimer le titre existant
             }
+            if ($request->request->get('description') === null) {
+                $service->setDescription(null); // Supprimer le titre existant
+            }
+            
             // Mise à jour du service
             $service->setNomService($nom);
             $service->setDescription($description);
             $service->setTitreService($titre);
+            $service->setTypeService($type);
             
     
             // Suppression des sous-services associés
@@ -128,6 +122,14 @@ class ServicesController extends AbstractController
             foreach ($sousServices as $sousService) {
                 $this->entityManager->remove($sousService);
             }}
+
+            $removeImage = $request->request->get('removeImage'); // On récupère l'indicateur de suppression
+            if ($removeImage === 'true') {
+                foreach ($service->getImages() as $image) {
+                $service->removeImage($image);
+                $this->entityManager->remove($image);
+                }
+            }
             //Suppression de l'image associés
             foreach($service->getImages() as $image){
                 $service->removeImage($image);

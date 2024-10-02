@@ -4,5 +4,5 @@ export interface SousService {
   nomSousService: string;
   description: string;
   typeSousService: string;
-  nomService: string;
+  idService: string;
 }

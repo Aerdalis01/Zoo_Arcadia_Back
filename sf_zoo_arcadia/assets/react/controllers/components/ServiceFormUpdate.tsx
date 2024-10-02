@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ImageForm } from "../../controllers/components/ImageForm";
 
-
 export function ServiceFormUpdate() {
   const [services, setServices] = useState([]);
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
@@ -14,7 +13,7 @@ export function ServiceFormUpdate() {
     description: "",
     typeService: "",
   });
-
+  const [removeImage, setRemoveImage] = useState<boolean | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -24,7 +23,7 @@ export function ServiceFormUpdate() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Services récupérés :", data);
-        setServices(data); // Mettre à jour l'état des services
+          setServices(data); 
       })
       .catch((error) => {
         console.error("Erreur lors du chargement des services :", error);
@@ -43,24 +42,29 @@ export function ServiceFormUpdate() {
         })
         .then((data) => {
           console.log("Services récupérés :", data);
-          
+
           setServiceData({
             id: data.id || 0,
-            nomService: data.nomService || '',
-            titreService: data.titreService || '',
-            description: data.description || '',
-            typeService: data.typeService || '',
+            nomService: data.nomService || "",
+            titreService: data.titreService || "",
+            description: data.description || "",
+            typeService: data.typeService || "",
           });
         })
         .catch((error) => {
-          console.error("Erreur lors du chargement des données du service:", error);
+          console.error(
+            "Erreur lors du chargement des données du service:",
+            error
+          );
         });
     }
   }, [selectedServiceId]);
 
   //Gestion du changement du select
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedServiceId(Number(e.target.value));
+    const selectedId = Number(e.target.value);
+    console.log("Service sélectionné avec l'ID :", selectedId);
+    setSelectedServiceId(selectedId);
   };
 
   // Gestion des changements pour les champs de service
@@ -75,36 +79,49 @@ export function ServiceFormUpdate() {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!serviceData.nomService || !serviceData.typeService) {
+      setError("Les champs Nom et Type sont obligatoires.");
+      return;
+    }
     const formService = new FormData();
     console.log("Service Data:", serviceData);
-    formService.append('nomService', serviceData.nomService);
-    formService.append('description', serviceData.description);
-    formService.append('typeService', serviceData.typeService);
-    formService.append('titreService', serviceData.titreService);
+    formService.append("nomService", serviceData.nomService);
+    formService.append("description", serviceData.description);
+    formService.append("typeService", serviceData.typeService);
+    formService.append("titreService", serviceData.titreService);
 
-      if (file) {
-        //Appel du timestamp pour générer un nom d'image unique
-        const timestamp = new Date().getTime();
-        //utilisation du timestamp dans le nom de l'image
-        const imageNameGenerated = `${serviceData.nomService}-${timestamp}`;
-        //enregistrament automatique du chemin de l'image
-        const imagePathGenerated = `/${serviceData.nomService.toLowerCase()}`;
-        const imageSubDirectory = `/uploads/images/services/${imageNameGenerated}`;
+    if (removeImage) {
+      formService.append("removeImage", "true");
+    }
+    if (file) {
+      //Appel du timestamp pour générer un nom d'image unique
+      const timestamp = new Date().getTime();
+      //utilisation du timestamp dans le nom de l'image
+      const imageNameGenerated = `${serviceData.nomService}-${timestamp}`;
+      //enregistrament automatique du chemin de l'image
+      const imagePathGenerated = `/${serviceData.nomService.toLowerCase()}`;
+      const imageSubDirectory = `/uploads/images/services/${imageNameGenerated}`;
 
-      formService.append('file', file);
-      formService.append('nom', imageNameGenerated);
-      formService.append('image_sub_directory', `/uploads/images/services/${imageNameGenerated}`);
-      }
-    
-    console.log("Données envoyées :", Array.from((formService as any).entries()));
+      formService.append("file", file);
+      formService.append("nom", imageNameGenerated);
+      formService.append(
+        "image_sub_directory",
+        `/uploads/images/services/${imageNameGenerated}`
+      );
+    }
+
+    console.log(
+      "Données envoyées :",
+      Array.from((formService as any).entries())
+    );
 
     fetch(`/api/services/${selectedServiceId}`, {
-      method: "POST", 
+      method: "POST",
       body: formService,
     })
       .then((response) => {
         if (!response.ok) {
-            throw new Error("Erreur lors de la mise à jour du service");
+          throw new Error("Erreur lors de la mise à jour du service");
         }
         return response.json();
       })
@@ -134,20 +151,6 @@ export function ServiceFormUpdate() {
         ))}
       </select>
       <div>
-        <label>Type de service :</label>
-        <select
-          name="typeService"
-          value={serviceData.typeService}
-          onChange={handleServiceChange}
-        >
-          <option value="">Sélectionner un type de service</option>
-          <option value="restauration">Restauration</option>
-          <option value="visite_guidee">Visite Guidée</option>
-          <option value="petit_train">Petit Train</option>
-          <option value="info_service">Info Service</option>
-        </select>
-      </div>
-      <div>
         <label>Nom du service :</label>
         <input
           type="text"
@@ -174,9 +177,24 @@ export function ServiceFormUpdate() {
           onChange={handleServiceChange}
         />
       </div>
+      <div>
+        <label>Type de service :</label>
+        <input
+          type="text"
+          name="typeService"
+          value={serviceData.typeService}
+          onChange={handleServiceChange}
+        />
+      </div>
 
       <ImageForm serviceName={serviceData.nomService} onImageSelect={setFile} />
-
+      <div>
+        <label>Supprimer l'image existante :</label>
+        <input
+          type="checkbox"
+          onChange={(e) => setRemoveImage(e.target.checked)} // Utilise un state pour traquer cette option
+        />
+      </div>
       <button type="submit">Mettre à jour</button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}

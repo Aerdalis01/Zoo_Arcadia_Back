@@ -19,13 +19,6 @@ class Admin extends User
     private Collection $horaires;
 
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->setRoles(['ROLE_ADMIN']);
-    }
-
-
     /**
      * @return Collection<int, habitats>
      */

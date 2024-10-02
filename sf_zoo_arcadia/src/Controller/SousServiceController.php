@@ -47,13 +47,13 @@ class SousServiceController extends AbstractController
             $nom = $request->request->get('nomSousService'); 
             $description = $request->request->get('description');
             $type = $request->request->get('typeSousService');
+            $idService = $request->request->get('idService');
 
             $file = $request->files->get('file');
             $imageSubDirectory = $request->request->get('image_sub_directory');
             $imageName = $request->request->get('nom');
-            $nomService = $request->request->get('nomService');
 
-            if (!$nom || !$description || !$type) {
+            if (!$nom || !$description || !$type || !$idService) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Paramètres manquants.'], 400);
             }
     
@@ -68,7 +68,7 @@ class SousServiceController extends AbstractController
                 'nomSousService' => $nom,
                 'description' => $description,
                 'typeSousService' => $type,
-                'nomService' => $nomService
+                'idService' => $idService
             ], $image);
 
             return new JsonResponse(['status' => 'success', 'id' => $sousService->getId()], 201);
